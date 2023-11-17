@@ -45,4 +45,42 @@ const getParkingSpaces = async (req, res) => {
     }
   }
 
-  module.exports = {getParkingSpaces, addParkingSpaces, updateParkingSpaces, deleteParkingSpaces}
+  const nearestParkingSpaces = async (req, res) => {
+    try {
+      const { destinationLongitude, destinationLatitude } = req.query;
+  
+      if (!destinationLongitude || !destinationLatitude) {
+        return res.status(400).json({ error: 'Destination coordinates are required.' });
+      }
+  
+      const destLng = parseFloat(destinationLongitude);
+      const destLat = parseFloat(destinationLatitude);
+  
+      const nearestParkingSpace = await ParkingSpace.find({
+        location: {
+          $near: {
+            $geometry: {
+              type: 'Point',
+              coordinates: [destLng, destLat],
+            },
+            $maxDistance: 10000, 
+          },
+        },
+      }).limit(1);
+  
+      if (!nearestParkingSpace || nearestParkingSpace.length === 0) {
+        return res.status(404).json({ error: 'No parking space found near the destination.' });
+      }
+  
+      res.json(nearestParkingSpace[0]);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  }
+
+  module.exports = {getParkingSpaces, 
+                    addParkingSpaces, 
+                    updateParkingSpaces, 
+                    deleteParkingSpaces, 
+                    nearestParkingSpaces}
