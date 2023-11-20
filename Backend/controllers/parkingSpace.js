@@ -46,14 +46,16 @@ const getParkingSpaces = async (req, res) => {
       res.status(500).json({ error: 'Something went wrong' });
     }
   }
+
+
   function haversine(lat1, lon1, lat2, lon2) {
-    // Convert latitude and longitude from degrees to radians
+
+
     const radLat1 = (Math.PI / 180) * lat1;
     const radLon1 = (Math.PI / 180) * lon1;
     const radLat2 = (Math.PI / 180) * lat2;
     const radLon2 = (Math.PI / 180) * lon2;
   
-    // Calculate differences
     const deltaLat = radLat2 - radLat1;
     const deltaLon = radLon2 - radLon1;
   
@@ -67,13 +69,12 @@ const getParkingSpaces = async (req, res) => {
     // Radius of the Earth in kilometers
     const R = 6371;
   
-    // Calculate the distance
     const distance = R * c;
   
-    return distance;
+    return distance; // in kms
   }
   
-  const MAX_ALLOWABLE_DISTANCE = 10000000;
+  const MAX_ALLOWABLE_DISTANCE = 10000; // 1 degree of long and lat is approx equal to 100 kms 
 
 const nearestParkingSpace = async (req, res) => {
     console.log('hey')
@@ -90,7 +91,8 @@ const nearestParkingSpace = async (req, res) => {
     const allParkingSpaces = await ParkingSpace.find();
 
     if (!allParkingSpaces || allParkingSpaces.length === 0) {
-      return res.status(404).json({ error: 'No parking spaces found.' });
+      return res.status(404).json({ error: 'No parking spaces found.' });   
+       
     }
 
     const nearbyParkingSpaces = allParkingSpaces.filter((parkingSpace) => {
