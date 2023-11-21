@@ -66,19 +66,20 @@ const getParkingSpaces = async (req, res) => {
   
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   
-    // Radius of the Earth in kilometers
-    const R = 6371;
+    
+    const R = 6371; // Radius of Earth in kilometers
   
     const distance = R * c;
   
     return distance; // in kms
   }
   
-  const MAX_ALLOWABLE_DISTANCE = 10000; // 1 degree of long and lat is approx equal to 100 kms 
+  const MAX_ALLOWABLE_DISTANCE = 1000; // 1 degree of long and lat is approx equal to 100 kms 
 
 const nearestParkingSpace = async (req, res) => {
-    console.log('hey')
+    
   try {
+    console.log('hey')
     const { destinationLatitude, destinationLongitude } = req.query;
 
     if (!destinationLatitude || !destinationLongitude) {
