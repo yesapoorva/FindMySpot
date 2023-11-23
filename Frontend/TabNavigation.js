@@ -16,8 +16,9 @@ export default function TabNavigation() {
       <Tab.Navigator
         screenOptions={({ route }) => ({
           // bottom label
-          tabBarShowLabel: true,
-
+          tabBarShowLabel: false,
+          // screen header or screen name
+          headerShown:false,
           //tab bar styling
           tabBarStyle: styles.tabContainer,
 
