@@ -12,13 +12,16 @@ import { useEffect } from "react";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import * as Location from "expo-location";
 //navigation
-import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { NavigationContainer } from "@react-navigation/native";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
 //import api
-import API_KEY from "../cred";
+import { TOMTOM_API_KEY } from "@env";
+
 import { useState } from "react";
 import axios from "axios";
+
+console.log("tomto key===", TOMTOM_API_KEY);
 
 export default function Home({ navigation }) {
   const [searchInput, setSearchInput] = useState("");
@@ -28,7 +31,7 @@ export default function Home({ navigation }) {
     async function getLocation() {
       const { status } = await Location.requestForegroundPermissionsAsync();
       if (status === "granted") {
-        console.log('location permission granted');
+        console.log("location permission granted");
       } else {
         console.log("location permission denied");
       }
@@ -36,11 +39,10 @@ export default function Home({ navigation }) {
     getLocation();
   }, []);
 
-
   function handleSearch() {
     const URL = `https://api.tomtom.com/search/2/search/${encodeURIComponent(
       searchInput
-    )}.json?key=${API_KEY}`;
+    )}.json?key=${TOMTOM_API_KEY}`;
     axios
       .get(URL)
       .then((res) => {
@@ -50,8 +52,8 @@ export default function Home({ navigation }) {
       .catch((e) => console.log(e));
   }
 
-  function handleNavigation(result){
-    navigation.navigate('Destination' ,{result});
+  function handleNavigation(result) {
+    navigation.navigate("Destination", { result });
   }
 
   return (
@@ -85,7 +87,10 @@ export default function Home({ navigation }) {
           {searchResult.length > 0 && (
             <View>
               {searchResult.map((result, index) => (
-                <TouchableOpacity  key={index} onPress={() => handleNavigation(result)}>
+                <TouchableOpacity
+                  key={index}
+                  onPress={() => handleNavigation(result)}
+                >
                   <View
                     key={index}
                     style={styles.list}

@@ -4,6 +4,12 @@ import MapView from "react-native-maps";
 import { Marker } from "react-native-maps";
 import * as Location from "expo-location";
 
+
+
+// api call for nearby parking spaces  GET method
+url = 'https://findmyspot.onrender.com/api/parkingspaces/nearest?destinationLongitude=78&destinationLatitude=14'
+
+
 export default function Destination({ route, navigation }) {
   const [searchResult, getSearchResult] = useState({});
   const [coordinates, setCoOrdinates] = useState({ lat: null, long: null });
@@ -103,6 +109,9 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderStyle: "solid",
     borderColor: "black",
+    borderRadius: 10,
+
+   
   },
 
   mapBox: {
@@ -118,3 +127,5 @@ const styles = StyleSheet.create({
     borderColor: "red",
   },
 });
+
+
