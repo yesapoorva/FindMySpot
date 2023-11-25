@@ -74,7 +74,7 @@ const getParkingSpaces = async (req, res) => {
     return distance; // in kms
   }
   
-  const MAX_ALLOWABLE_DISTANCE = 1000; // 1 degree of long and lat is approx equal to 100 kms 
+  const MAX_ALLOWABLE_DISTANCE = 10; // 1 degree of long and lat is approx equal to 100 kms 
 
 const nearestParkingSpace = async (req, res) => {
     
