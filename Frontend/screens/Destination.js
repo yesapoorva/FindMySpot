@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import {
   ActivityIndicator,
   View,
@@ -6,6 +6,7 @@ import {
   StyleSheet,
   ScrollView,
   TouchableOpacity,
+  Button,
 } from "react-native";
 import MapView from "react-native-maps";
 import { Marker } from "react-native-maps";
@@ -16,12 +17,13 @@ import axios from "axios";
 export default function Destination({ route, navigation }) {
   const [searchResult, getSearchResult] = useState({});
   const [userCoOrdinates, setUserCoOrdinates] = useState({
-    lat: null,
-    long: null,
+    longitude: null,
+    latitude: null,
   });
   const [parkingSpaces, setParkingSpaces] = useState([]);
   const [markerCoordinates, setMarkercoordinates] = useState([]);
   const [loading, setLoading] = useState(false);
+  const mapReference = useRef(null); //for map referance
 
   //initialise function to get user's location
   async function getUserLocation() {
@@ -32,8 +34,8 @@ export default function Destination({ route, navigation }) {
       const longitude = location.coords.longitude;
 
       setUserCoOrdinates({
-        lat: latitude,
-        long: longitude,
+        latitude: latitude,
+        longitude: longitude,
       });
     }
   }
@@ -54,17 +56,18 @@ export default function Destination({ route, navigation }) {
       );
       const URL = `https://findmyspot.onrender.com/api/parkingspaces/nearest?destinationLongitude=${longitude}&destinationLatitude=${lattitude}`;
       setLoading(true);
-      axios
+      await axios
         .get(URL)
         .then((response) => {
           setParkingSpaces(response.data);
 
           //make marker data from API
           const coordinates = response.data.map((element) => {
-            {
-              longitude: element.location.coordinates[0];
-              lattitude: element.location.coordinates[1];
-            }
+            return {
+              id: element.name,
+              longitude: element.location.coordinates[0],
+              latitude: element.location.coordinates[1],
+            };
           });
           setMarkercoordinates(coordinates);
           setLoading(false);
@@ -72,8 +75,41 @@ export default function Destination({ route, navigation }) {
         .catch((error) => {
           console.log(error);
           setParkingSpaces([]);
+          setMarkercoordinates([]);
           setLoading(false);
         });
+    }
+  }
+
+  function CustomMarker() {
+    return <Ionicons name="car" color="#0F81C7" size={30}></Ionicons>;
+  }
+
+  function fitToCoordinate() {
+    if (mapReference.current && markerCoordinates.length > 0) {
+      const searchedLocation = {
+        id: "searchedResult",
+        latitude: searchResult.result.position.lat,
+        longitude: searchResult.result.position.lon,
+      };
+
+      const updatedData = [...markerCoordinates, searchedLocation];
+
+      mapReference.current.fitToCoordinates(updatedData, {
+        animated: true,
+        edgePadding: { top: 50, right: 50, bottom: 50, left: 50 },
+      });
+    }
+  }
+
+  function showUserLocation() {
+    if (userCoOrdinates.latitude !== null && userCoOrdinates !== null) {
+      mapReference.current.animateToRegion({
+        latitude: userCoOrdinates.latitude,
+        longitude: userCoOrdinates.longitude,
+        latitudeDelta: 0.005,
+        longitudeDelta: 0.005,
+      })
     }
   }
 
@@ -82,13 +118,21 @@ export default function Destination({ route, navigation }) {
     if (route.params !== undefined) {
       getSearchResult(route.params);
       getParkingLocations(route.params);
-      getUserLocation()
+      getUserLocation();
     } else {
       console.log("direct navigation");
     }
   }, [route.params]);
 
-console.log(`user location : longitude = ${userCoOrdinates.long} | lattitude = ${userCoOrdinates.lat}`)
+  useEffect(() => {
+    if (markerCoordinates.length > 0) {
+      fitToCoordinate();
+    }
+  }, [markerCoordinates]);
+
+  console.log(
+    `user location : longitude = ${userCoOrdinates.longitude} | lattitude = ${userCoOrdinates.latitude}`
+  );
 
   return (
     <View style={styles.container}>
@@ -102,6 +146,7 @@ console.log(`user location : longitude = ${userCoOrdinates.long} | lattitude = $
       <View style={styles.mapBox}>
         {searchResult && Object.keys(searchResult).length !== 0 ? (
           <MapView
+            ref={mapReference}
             showsUserLocation
             key={searchResult.result.position.lat}
             style={styles.map}
@@ -120,17 +165,17 @@ console.log(`user location : longitude = ${userCoOrdinates.long} | lattitude = $
               pinColor="red"
             ></Marker>
 
-            {route.params !== undefined && parkingSpaces.length !== 0
-              ? parkingSpaces.map((element) => (
+            {route.params !== undefined && markerCoordinates.length !== 0
+              ? markerCoordinates.map((element) => (
                   <Marker
-                    key={element.location.coordinates[1]}
+                    key={element.id}
                     coordinate={{
-                      latitude: element.location.coordinates[1],
-                      longitude: element.location.coordinates[0],
+                      latitude: element.latitude,
+                      longitude: element.longitude,
                     }}
                     pinColor="#0F81C7"
                   >
-                    <CustomMarker/>
+                    <CustomMarker />
                   </Marker>
                 ))
               : null}
@@ -142,6 +187,12 @@ console.log(`user location : longitude = ${userCoOrdinates.long} | lattitude = $
             </Text>
           </View>
         )}
+        <TouchableOpacity
+          style={styles.locationButtonBox}
+          onPress={showUserLocation}
+        >
+          <Ionicons name="navigate-outline" size={36} />
+        </TouchableOpacity>
       </View>
       <ScrollView style={styles.parkingLocationBox}>
         {loading ? (
@@ -166,7 +217,7 @@ console.log(`user location : longitude = ${userCoOrdinates.long} | lattitude = $
                     onPress={() => console.log("booked")}
                     style={styles.bookButton}
                   >
-                    <Text>book</Text>
+                    <Text style={{color:'white', fontSize:20}}>book</Text>
                   </TouchableOpacity>
                 </View>
               ))
@@ -180,13 +231,6 @@ console.log(`user location : longitude = ${userCoOrdinates.long} | lattitude = $
       </ScrollView>
     </View>
   );
-}
-
-
-function CustomMarker(){
-    return(
-        <Ionicons name="car" color="#0F81C7" size={30}></Ionicons>
-    )
 }
 
 //styling
@@ -228,6 +272,22 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderStyle: "solid",
     borderColor: "red",
+  },
+  locationButtonBox: {
+    position: "absolute",
+    bottom: 15,
+    right: 15,
+
+    height: 60,
+    width: 60,
+
+    alignItems: "center",
+    justifyContent: "center",
+
+    borderWidth: 1,
+    borderRadius: "50%",
+    borderStyle: "solid",
+    borderColor: "black",
   },
   parkingLocationBox: {
     maxHeight: 320,
