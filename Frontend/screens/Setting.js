@@ -1,5 +1,4 @@
 import { View , Text , StyleSheet} from "react-native"
-import Map2 from './Map2'
 
 
 
