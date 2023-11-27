@@ -9,10 +9,13 @@ import {
   Button,
 } from "react-native";
 import MapView from "react-native-maps";
-import { Marker } from "react-native-maps";
+import { Marker ,Circle} from "react-native-maps";
 import * as Location from "expo-location";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import axios from "axios";
+
+//import api
+import { TOMTOM_API_KEY } from "@env";
 
 export default function Destination({ route, navigation }) {
   const [searchResult, getSearchResult] = useState({});
@@ -50,10 +53,6 @@ export default function Destination({ route, navigation }) {
       const lattitude = initialLocation.result.position.lat;
       const longitude = initialLocation.result.position.lon;
       const address = initialLocation.result.address.freeformAddress;
-      console.log(`address : ${address}`);
-      console.log(
-        `data in axios : lattitude = ${lattitude} | longitude = ${longitude}`
-      );
       const URL = `https://findmyspot.onrender.com/api/parkingspaces/nearest?destinationLongitude=${longitude}&destinationLatitude=${lattitude}`;
       setLoading(true);
       await axios
@@ -65,10 +64,14 @@ export default function Destination({ route, navigation }) {
           const coordinates = response.data.map((element) => {
             return {
               id: element.name,
+              name: element.name,
               longitude: element.location.coordinates[0],
               latitude: element.location.coordinates[1],
             };
           });
+
+          setMarkercoordinates(coordinates);
+          updateMarkers(userCoOrdinates, coordinates, TOMTOM_API_KEY);
           setMarkercoordinates(coordinates);
           setLoading(false);
         })
@@ -78,6 +81,40 @@ export default function Destination({ route, navigation }) {
           setMarkercoordinates([]);
           setLoading(false);
         });
+    }
+  }
+
+  async function updateMarkers(origin, markerArray, key) {
+    if (
+      markerArray.length > 0 &&
+      origin.latitude !== null &&
+      origin.latitude !== undefined &&
+      origin.longitude !== null &&
+      origin.longitude !== undefined
+    ) {
+      const allData = await Promise.all(
+        markerArray.map(async (element) => {
+          setLoading(true);
+          const URL = `https://api.tomtom.com/routing/1/calculateRoute/${origin.latitude},${origin.longitude}:${element.latitude},${element.longitude}/json?&traffic=true&travelMode=car&vehicleEngineType=combustion&key=${key}`;
+
+          try {
+            const response = await axios.get(URL);
+            const data = {
+              time: response.data.routes[0].summary.travelTimeInSeconds,
+              distance: response.data.routes[0].summary.lengthInMeters,
+              //points: response.data.routes[0].legs[0].points,
+            };
+
+            return { ...element, ...data };
+          } catch (error) {
+            console.log(error);
+            return null;
+          }
+        })
+      );
+
+      setMarkercoordinates(allData);
+      setLoading(false);
     }
   }
 
@@ -109,126 +146,196 @@ export default function Destination({ route, navigation }) {
         longitude: userCoOrdinates.longitude,
         latitudeDelta: 0.005,
         longitudeDelta: 0.005,
-      })
+      });
     }
   }
 
-  useEffect(() => {
-    console.log("useEffect run");
-    if (route.params !== undefined) {
-      getSearchResult(route.params);
-      getParkingLocations(route.params);
-      getUserLocation();
-    } else {
-      console.log("direct navigation");
-    }
-  }, [route.params]);
+  function convertTime(totalSeconds) {
+    const totalMinutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+    const hours = Math.floor(totalMinutes / 60);
+    const minutes = totalMinutes % 60;
+
+    return `${hours} hr ${minutes} min`;
+  }
 
   useEffect(() => {
+    (async () => {
+      console.log("----1st useEfect runned---");
+      await getUserLocation();
+
+      if (route.params !== undefined && markerCoordinates.length > 0) {
+        await getParkingLocations(route.params);
+        await updateMarkers(userCoOrdinates, markerCoordinates, TOMTOM_API_KEY);
+        console.log("async runned");
+      }
+    })();
+  }, []);
+
+  useEffect(() => {
+    (async () => {
+      if (route.params !== undefined) {
+        getSearchResult(route.params);
+
+        await getParkingLocations(route.params);
+
+        console.log("length==", markerCoordinates.length);
+
+        if (markerCoordinates.length > 0) {
+        }
+      } else {
+        console.log("direct navigation");
+      }
+    })();
+  }, [route.params, userCoOrdinates]);
+
+  useEffect(() => {
+    console.log("----2nd useEfect runned---", markerCoordinates.length);
     if (markerCoordinates.length > 0) {
       fitToCoordinate();
+      //console.log("length===========",markerCoordinates.length)
     }
   }, [markerCoordinates]);
 
-  console.log(
-    `user location : longitude = ${userCoOrdinates.longitude} | lattitude = ${userCoOrdinates.latitude}`
-  );
-
   return (
     <View style={styles.container}>
-      <View style={styles.title}>
-        <Text>
-          {searchResult && Object.keys(searchResult).length !== 0
-            ? searchResult.result.address.freeformAddress
-            : "title"}
-        </Text>
-      </View>
-      <View style={styles.mapBox}>
-        {searchResult && Object.keys(searchResult).length !== 0 ? (
-          <MapView
-            ref={mapReference}
-            showsUserLocation
-            key={searchResult.result.position.lat}
-            style={styles.map}
-            initialRegion={{
-              latitude: searchResult.result.position.lat,
-              longitude: searchResult.result.position.lon,
-              latitudeDelta: 0.00922,
-              longitudeDelta: 0.00421,
-            }}
-          >
-            <Marker
-              coordinate={{
-                latitude: searchResult.result.position.lat,
-                longitude: searchResult.result.position.lon,
-              }}
-              pinColor="red"
-            ></Marker>
+      {userCoOrdinates.latitude !== null &&
+      userCoOrdinates.latitude !== undefined ? (
+        <View>
+          {searchResult && Object.keys(searchResult).length !== 0 ? (
+            <View>
+              <View style={styles.title}>
+                <Text>{searchResult.result.address.freeformAddress}</Text>
+              </View>
 
-            {route.params !== undefined && markerCoordinates.length !== 0
-              ? markerCoordinates.map((element) => (
-                  <Marker
-                    key={element.id}
-                    coordinate={{
-                      latitude: element.latitude,
-                      longitude: element.longitude,
+              <View style={styles.mapBox}>
+                {searchResult && Object.keys(searchResult).length !== 0 ? (
+                  <MapView
+                    ref={mapReference}
+                    showsUserLocation
+                    key={searchResult.result.position.lat}
+                    style={styles.map}
+                    initialRegion={{
+                      latitude: searchResult.result.position.lat,
+                      longitude: searchResult.result.position.lon,
+                      latitudeDelta: 0.00922,
+                      longitudeDelta: 0.00421,
                     }}
-                    pinColor="#0F81C7"
                   >
-                    <CustomMarker />
-                  </Marker>
-                ))
-              : null}
-          </MapView>
-        ) : (
-          <View>
-            <Text style={{ alignSelf: "center" }}>
-              please search location first
-            </Text>
-          </View>
-        )}
-        <TouchableOpacity
-          style={styles.locationButtonBox}
-          onPress={showUserLocation}
-        >
-          <Ionicons name="navigate-outline" size={36} />
-        </TouchableOpacity>
-      </View>
-      <ScrollView style={styles.parkingLocationBox}>
-        {loading ? (
-          <ActivityIndicator
-            size={"large"}
-            color={"#0F81C7"}
-            style={{ alignSelf: "center", marginVertical: "40%" }}
-          />
-        ) : (
-          <View>
-            {route.params !== undefined && parkingSpaces.length !== 0 ? (
-              parkingSpaces.map((element) => (
-                <View key={element.name} style={styles.bookBox}>
-                  <View style={styles.textBox}>
-                    <Ionicons name="compass" color="#0F81C7" size={36} />
-                    <Text style={{ marginStart: 10, flexShrink: 1 }}>
-                      {element.name}
+                    <Marker
+                      coordinate={{
+                        latitude: searchResult.result.position.lat,
+                        longitude: searchResult.result.position.lon,
+                      }}
+                      pinColor="red"
+                    ></Marker>
+
+                    {route.params !== undefined &&
+                    markerCoordinates.length !== 0
+                      ? markerCoordinates.map((element) => (
+                          <Marker
+                            key={element.id}
+                            coordinate={{
+                              latitude: element.latitude,
+                              longitude: element.longitude,
+                            }}
+                            pinColor="#0F81C7"
+                          >
+                            <CustomMarker />
+                          </Marker>
+                        ))
+                      : null}
+                  </MapView>
+                ) : (
+                  <View>
+                    <Text style={{ alignSelf: "center" }}>
+                      please search location first
                     </Text>
                   </View>
+                )}
+                <TouchableOpacity
+                  style={styles.locationButtonBox}
+                  onPress={showUserLocation}
+                >
+                  <Ionicons name="navigate-outline" size={36} />
+                </TouchableOpacity>
+              </View>
 
-                  <TouchableOpacity
-                    onPress={() => console.log("booked")}
-                    style={styles.bookButton}
-                  >
-                    <Text style={{color:'white', fontSize:20}}>book</Text>
-                  </TouchableOpacity>
-                </View>
-              ))
-            ) : (
-              <Text style={{ alignSelf: "center", marginVertical: "40%" }}>
-                there are no parking spaces in this area
-              </Text>
-            )}
-          </View>
-        )}
-      </ScrollView>
+              <ScrollView style={styles.parkingLocationBox}>
+                {loading && userCoOrdinates.latitude !== null ? (
+                  <ActivityIndicator
+                    size={"large"}
+                    color={"#0F81C7"}
+                    style={{ alignSelf: "center", marginVertical: "40%" }}
+                  />
+                ) : (
+                  <View>
+                    {route.params !== undefined &&
+                    markerCoordinates.length !== 0 ? (
+                      markerCoordinates.map((element) => (
+                        <View key={element.id} style={styles.bookBox}>
+                          <View style={styles.textBox}>
+                            <Ionicons
+                              name="compass"
+                              color="#0F81C7"
+                              size={36}
+                            />
+                            <View>
+                              <Text style={{ marginStart: 10, flexShrink: 1 }}>
+                                {element.name}
+                              </Text>
+
+                              <View>
+                                {element.time ? (
+                                  <Text
+                                    style={{ marginStart: 10, flexShrink: 1 }}
+                                  >
+                                    {convertTime(element.time)} (
+                                    {element.distance} m)
+                                  </Text>
+                                ) : (
+                                  <ActivityIndicator size={"small"} />
+                                )}
+                              </View>
+                            </View>
+                          </View>
+
+                          <TouchableOpacity
+                            onPress={() => console.log("booked")}
+                            style={styles.bookButton}
+                          >
+                            <Text style={{ color: "white", fontSize: 20 }}>
+                              book
+                            </Text>
+                          </TouchableOpacity>
+                        </View>
+                      ))
+                    ) : (
+                      <Text
+                        style={{
+                          alignSelf: "center",
+                          marginVertical: "40%",
+                          fontSize: 20,
+                        }}
+                      >
+                        there are no parking spaces in this area
+                      </Text>
+                    )}
+                  </View>
+                )}
+              </ScrollView>
+            </View>
+          ) : (
+            <View style={{ marginTop: 360 }}>
+              <Text style={{ fontSize: 36 }}>Please search location first</Text>
+            </View>
+          )}
+        </View>
+      ) : (
+        <View>
+          <ActivityIndicator size={"large"} color={"#0F81C7"} />
+        </View>
+      )}
     </View>
   );
 }
@@ -238,6 +345,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     marginTop: 48,
+
+    justifyContent: "center",
 
     borderWidth: 2,
     borderStyle: "solid",
@@ -262,7 +371,7 @@ const styles = StyleSheet.create({
   },
 
   mapBox: {
-    height: "30%",
+    minHeight:'30%',
     width: "95%",
 
     alignSelf: "center",
@@ -271,7 +380,7 @@ const styles = StyleSheet.create({
     flex: 1,
     borderWidth: 1,
     borderStyle: "solid",
-    borderColor: "red",
+    borderColor: "black",
   },
   locationButtonBox: {
     position: "absolute",
@@ -290,15 +399,17 @@ const styles = StyleSheet.create({
     borderColor: "black",
   },
   parkingLocationBox: {
-    maxHeight: 320,
+
+    minHeight:320,
+    maxHeight:320,
     width: "95%",
 
     alignSelf: "center",
     marginVertical: 10,
 
-    // borderWidth: 1,
-    // borderStyle: "solid",
-    // borderColor: "green",
+    borderWidth: 1,
+    borderStyle: "solid",
+    borderColor: "green",
   },
   textBox: {
     height: 60,
