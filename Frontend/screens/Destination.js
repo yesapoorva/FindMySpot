@@ -303,8 +303,9 @@ export default function Destination({ route, navigation }) {
 
                           <TouchableOpacity
                             onPress={() => {
-                              navigation.navigate("Testing");
-                              console.log('booked')
+                              const name = element.name;
+                              navigation.removeListener;
+                              navigation.navigate('ConfirmSpots',{name})
                             }}
                             style={styles.bookButton}
                           >
@@ -362,6 +363,7 @@ const styles = StyleSheet.create({
     alignSelf: "center",
 
     marginVertical: 40,
+  
 
     display: "flex",
     flexDirection: "row",
@@ -375,7 +377,7 @@ const styles = StyleSheet.create({
   },
 
   mapBox: {
-    minHeight: "30%",
+    minHeight: "35%",
     width: "95%",
 
     alignSelf: "center",

@@ -1,13 +1,12 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
-import { Colors } from "../components/styles";
+import { Colors } from "../Components/styles";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
-
-import CheckBox from 'react-native-check-box'
 
 const { brand, darklight, primary } = Colors;
 
-const ConfirmSpots = () => {
+const ConfirmSpots = ({ route , navigation}) => {
+  const [parkingData, getParkingData] = useState("");
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
   const [isFromTimePickerVisible, setFromTimePickerVisibility] =
     useState(false);
@@ -25,7 +24,8 @@ const ConfirmSpots = () => {
   };
 
   const handleDateConfirm = (date) => {
-    console.warn("A Date has been picked: ", date);
+   // console.warn("A Date has been picked: ", date);
+   console.log("A Date has been picked: ", date);
     const dt = new Date(date);
     const x = dt.toISOString().split("T");
     const x1 = x[0].split("-");
@@ -34,7 +34,7 @@ const ConfirmSpots = () => {
   };
 
   const showFromTimePicker = () => {
-    setFromTimePickerVisibility(true);
+      setFromTimePickerVisibility(true);
   };
 
   const hideFromTimePicker = () => {
@@ -42,7 +42,8 @@ const ConfirmSpots = () => {
   };
 
   const handleFromTimeConfirm = (date) => {
-    console.warn("A Time has been picked: ", date);
+    //console.warn("A Time has been picked: ", date);
+    console.log("A Time has been picked: ", date);
     const dt = new Date(date);
     const x = dt.toLocaleTimeString();
 
@@ -59,7 +60,8 @@ const ConfirmSpots = () => {
   };
 
   const handleToTimeConfirm = (date) => {
-    console.warn("A Time has been picked: ", date);
+    //console.warn("A Time has been picked: ", date);
+    console.log("A Time has been picked: ", date);
     const dt = new Date(date);
     const x = dt.toLocaleTimeString();
     console.log(x);
@@ -67,15 +69,17 @@ const ConfirmSpots = () => {
     hideToTimePicker();
   };
 
+  useEffect(() => {
+    getParkingData(route.params.name);
+  }, [route.params]);
+
   return (
     <View style={styles.container}>
       <Text style={styles.PageHeader}>Confirm MySpot</Text>
       <View style={styles.MySpot}>
         <View style={styles.Card}>
           <Text style={styles.Date}>MySpot:</Text>
-          <Text style={styles.Content}>
-            46, Richmond Rd, Victoria Layout, Bengaluru, Karnataka 560025
-          </Text>
+          <Text style={styles.Content}>{parkingData}</Text>
           <TouchableOpacity onPress={() => showDatePicker()}>
             <Text style={styles.Date}>Date: {selectedDate} </Text>
           </TouchableOpacity>
@@ -90,8 +94,7 @@ const ConfirmSpots = () => {
         <View style={styles.duration}>
           <View style={styles.fromCard}>
             <TouchableOpacity onPress={() => showFromTimePicker()}>
-              <Text style={styles.Date}>From :{fromTime} </Text>
-              <Text onPress={() => showFromTimePicker()} style={styles.Date}>From :{fromTime} </Text>
+              <Text style={styles.Date}>From: {fromTime} </Text>
             </TouchableOpacity>
             <DateTimePickerModal
               isVisible={isFromTimePickerVisible}
@@ -103,7 +106,7 @@ const ConfirmSpots = () => {
           </View>
           <View style={styles.toCard}>
             <TouchableOpacity onPress={() => showToTimePicker()}>
-              <Text style={styles.Date}>To :{toTime} </Text>
+              <Text style={styles.Date}>To: {toTime} </Text>
             </TouchableOpacity>
             <DateTimePickerModal
               isVisible={isToTimePickerVisible}
@@ -114,11 +117,8 @@ const ConfirmSpots = () => {
             />
           </View>
         </View>
-        <Text style={styles.reminderText}>
-          Remind me prior to 15mins to the completion of allotted time to extend
-          in case of extension
-        </Text>
-        <TouchableOpacity style={styles.button}>
+        <TouchableOpacity 
+        onPress={()=> navigation.navigate("BookingConfirmed")} style={styles.button}>
           <Text style={styles.buttonText}>Book MySpot</Text>
         </TouchableOpacity>
       </View>
@@ -130,9 +130,13 @@ const ConfirmSpots = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    marginTop: 60,
+    marginTop: 48,
     padding: 15,
     backgroundColor: "#FFFFFF",
+
+    borderWidth: 2,
+    borderStyle: "solid",
+    borderColor: "red",
   },
   PageHeader: {
     fontSize: 28,
@@ -214,7 +218,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     textAlign: "justify",
     marginTop: 200,
-    width: "90%"
+    width: "90%",
   },
 });
 
