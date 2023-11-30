@@ -8,15 +8,17 @@ import { Colors } from '../components/styles';
 // screens
 import Login from './../screens/Login';
 import Signup from './../screens/Signup';
-import Welcome from './../screens/Welcome';
 import BookingConfirmed from './../screens/BookingConfirmed';
 import ConfirmSpots from './../screens/ConfirmSpots';
 import MyBookings from './../screens/MyBookings';
 import ParkingSpots from './../screens/ParkingSpots';
+import Home from '../screens/Home';
+import Destination from '../screens/Destination';
+import UserProfile from '../screens/UserProfile';
 
 const Stack = createNativeStackNavigator();
 
-const {primary, tertiary} = Colors;
+const {primary, tertiary, brand} = Colors;
 
 const RootStack = () => {
     return (
@@ -26,7 +28,7 @@ const RootStack = () => {
                     headerStyled: {
                         backgroundColor: 'transparent'
                     },
-                    headerTintColor: tertiary,
+                    headerTintColor: brand,
                     headerTransparent: true,
                     headerTitle: '',
                     headerLeftContainerStyle: {
@@ -37,11 +39,13 @@ const RootStack = () => {
                 >
                 <Stack.Screen name="Login" component={Login} />
                 <Stack.Screen name="Signup" component={Signup} />
-                <Stack.Screen options={{headerTintColor: primary}} name="Welcome" component={Welcome} />
+                <Stack.Screen options={{headerTintColor: brand}} name="Home" component={Home} />
                 <Stack.Screen name="BookingConfirmed" component={BookingConfirmed} />
                 <Stack.Screen name="ConfirmSpots" component={ConfirmSpots} />
                 <Stack.Screen name="MyBookings" component={MyBookings} />
                 <Stack.Screen name="ParkingSpots" component={ParkingSpots} />
+                <Stack.Screen name="Destination" component={Destination} />
+                <Stack.Screen name="UserProfile" component={UserProfile} />
             </Stack.Navigator>
         </NavigationContainer>
     )
