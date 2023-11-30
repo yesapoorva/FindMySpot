@@ -64,7 +64,7 @@ export default function Destination({ route, navigation }) {
           //make marker data from API
           const coordinates = response.data.map((element) => {
             return {
-              id: element.name,
+              id: element._id,
               name: element.name,
               longitude: element.location.coordinates[0],
               latitude: element.location.coordinates[1],
@@ -160,15 +160,19 @@ export default function Destination({ route, navigation }) {
     return `${hours} hr ${minutes} min`;
   }
 
+  function handleNavigation(result) {
+    navigation.removeListener;
+    navigation.navigate("ConfirmSpots", result);
+    console.log("handle data" , result)
+  }
+
   useEffect(() => {
     (async () => {
-      console.log("----1st useEfect runned---");
       await getUserLocation();
 
       if (route.params !== undefined && markerCoordinates.length > 0) {
         await getParkingLocations(route.params);
         await updateMarkers(userCoOrdinates, markerCoordinates, TOMTOM_API_KEY);
-        console.log("async runned");
       }
     })();
   }, []);
@@ -180,9 +184,11 @@ export default function Destination({ route, navigation }) {
 
         await getParkingLocations(route.params);
 
-        console.log("length==", markerCoordinates.length);
-
         if (markerCoordinates.length > 0) {
+
+          markerCoordinates.forEach((element)=>{
+            console.log(`${element.name} | ${element.id}`)
+          })
         }
       } else {
         console.log("direct navigation");
@@ -191,7 +197,6 @@ export default function Destination({ route, navigation }) {
   }, [route.params, userCoOrdinates]);
 
   useEffect(() => {
-    console.log("----2nd useEfect runned---", markerCoordinates.length);
     if (markerCoordinates.length > 0) {
       fitToCoordinate();
       //console.log("length===========",markerCoordinates.length)
@@ -302,11 +307,7 @@ export default function Destination({ route, navigation }) {
                           </View>
 
                           <TouchableOpacity
-                            onPress={() => {
-                              const name = element.name;
-                              navigation.removeListener;
-                              navigation.navigate('ConfirmSpots',{name})
-                            }}
+                            onPress={() =>  handleNavigation(element)}
                             style={styles.bookButton}
                           >
                             <Text style={{ color: "white", fontSize: 20 }}>

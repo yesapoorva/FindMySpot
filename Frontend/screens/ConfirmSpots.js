@@ -1,12 +1,19 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  ActivityIndicator,
+} from "react-native";
 import { Colors } from "../Components/styles";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
+import axios from "axios";
 
 const { brand, darklight, primary } = Colors;
 
-const ConfirmSpots = ({ route , navigation}) => {
-  const [parkingData, getParkingData] = useState("");
+const ConfirmSpots = ({ route, navigation }) => {
+  const [parkingData, getParkingData] = useState();
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
   const [isFromTimePickerVisible, setFromTimePickerVisibility] =
     useState(false);
@@ -24,8 +31,8 @@ const ConfirmSpots = ({ route , navigation}) => {
   };
 
   const handleDateConfirm = (date) => {
-   // console.warn("A Date has been picked: ", date);
-   console.log("A Date has been picked: ", date);
+    // console.warn("A Date has been picked: ", date);
+    console.log("A Date has been picked: ", date);
     const dt = new Date(date);
     const x = dt.toISOString().split("T");
     const x1 = x[0].split("-");
@@ -34,7 +41,7 @@ const ConfirmSpots = ({ route , navigation}) => {
   };
 
   const showFromTimePicker = () => {
-      setFromTimePickerVisibility(true);
+    setFromTimePickerVisibility(true);
   };
 
   const hideFromTimePicker = () => {
@@ -69,17 +76,41 @@ const ConfirmSpots = ({ route , navigation}) => {
     hideToTimePicker();
   };
 
+  async function handleBooking(data) {
+    if (data.id !== null && data.id !== undefined) {
+      console.log("data sending in axios", data.id);
+
+      const URL = `https://findmyspot.onrender.com/api/parkingspaces/reserve/${data.id}`;
+      await axios
+        .get(URL)
+        .then((response) => {
+          console.Console.log(response);
+        })
+        .catch((error) => {
+          console.log("status code==", error.response.status);
+          console.log(error);
+        });
+    }
+  }
+
   useEffect(() => {
-    getParkingData(route.params.name);
+    getParkingData(route.params);
   }, [route.params]);
 
+  console.log("data===", parkingData);
   return (
     <View style={styles.container}>
       <Text style={styles.PageHeader}>Confirm MySpot</Text>
       <View style={styles.MySpot}>
         <View style={styles.Card}>
           <Text style={styles.Date}>MySpot:</Text>
-          <Text style={styles.Content}>{parkingData}</Text>
+
+          {parkingData === undefined ? (
+            <ActivityIndicator />
+          ) : (
+            <Text style={styles.Content}>{parkingData.name}</Text>
+          )}
+
           <TouchableOpacity onPress={() => showDatePicker()}>
             <Text style={styles.Date}>Date: {selectedDate} </Text>
           </TouchableOpacity>
@@ -117,8 +148,10 @@ const ConfirmSpots = ({ route , navigation}) => {
             />
           </View>
         </View>
-        <TouchableOpacity 
-        onPress={()=> navigation.navigate("BookingConfirmed")} style={styles.button}>
+        <TouchableOpacity
+          onPress={() => handleBooking(parkingData)}
+          style={styles.button}
+        >
           <Text style={styles.buttonText}>Book MySpot</Text>
         </TouchableOpacity>
       </View>
