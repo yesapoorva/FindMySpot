@@ -11,16 +11,13 @@ import {
 import { useEffect } from "react";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import * as Location from "expo-location";
-//navigation
-import { NavigationContainer } from "@react-navigation/native";
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
+
 
 //import api
 import { TOMTOM_API_KEY } from "@env";
 
 import { useState } from "react";
 import axios from "axios";
-
 
 export default function Home({ navigation }) {
   const [searchInput, setSearchInput] = useState("");
@@ -52,7 +49,10 @@ export default function Home({ navigation }) {
   }
 
   function handleNavigation(result) {
-    navigation.navigate("Destination", { result });
+    navigation.navigate("DestinationStack", {
+      screen: "Destination",
+      params: { result },
+    });
   }
 
   return (
@@ -90,10 +90,7 @@ export default function Home({ navigation }) {
                   key={index}
                   onPress={() => handleNavigation(result)}
                 >
-                  <View
-                    key={index}
-                    style={styles.list}
-                  >
+                  <View key={index} style={styles.list}>
                     <Text>{result.address.freeformAddress}</Text>
                     {}
                   </View>

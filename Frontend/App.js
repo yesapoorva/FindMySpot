@@ -1,31 +1,7 @@
-import { StyleSheet, Text, View } from "react-native";
+import React from "react";
 
-import TabNavigation from "./TabNavigation";
+import RootStack from "./navigators/RootStack";
 
 export default function App() {
-  
-  return(
-    <TabNavigation></TabNavigation>
-  )
-
-
+  return <RootStack />;
 }
-
-
-
-const styles = StyleSheet.create({
-  container: {
- 
-    backgroundColor: "#ffbbbb",
-   
-
-    paddingTop: 48,
-    paddingBottom: 36,
-    //paddingHorizontal:2
-
-    height:700,
-
-   
-  },
-
-});
