@@ -52,7 +52,10 @@ export default function Home({ navigation }) {
   }
 
   function handleNavigation(result) {
-    navigation.navigate("Destination", { result });
+    navigation.navigate("DestinationStack", { 
+      screen:'Destination',
+      params:{result},
+     });
   }
 
   return (

@@ -7,6 +7,7 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import Home from "./screens/Home";
 import Setting from "./screens/Setting";
 import Destination from "./screens/Destination";
+import DestinationStack from "./DestinationStack";
 
 const Tab = createBottomTabNavigator();
 
@@ -31,7 +32,7 @@ export default function TabNavigation() {
 
             if (route.name === "Home") {
               iconName = focused ? "home" : "home-outline";
-            } else if (route.name === "Destination") {
+            } else if (route.name === "DestinationStack") {
               iconName = focused ? "car" : "car-outline";
             } else if (route.name === "Settings") {
               iconName = focused ? "person" : "person-outline";
@@ -44,7 +45,7 @@ export default function TabNavigation() {
         })}
       >
         <Tab.Screen name="Home" component={Home}></Tab.Screen>
-        <Tab.Screen name="Destination" component={Destination}></Tab.Screen>
+        <Tab.Screen name="DestinationStack" component={DestinationStack}></Tab.Screen>
         <Tab.Screen name="Settings" component={Setting}></Tab.Screen>
       </Tab.Navigator>
     </NavigationContainer>

@@ -9,10 +9,11 @@ import {
   Button,
 } from "react-native";
 import MapView from "react-native-maps";
-import { Marker ,Circle} from "react-native-maps";
+import { Marker } from "react-native-maps";
 import * as Location from "expo-location";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import axios from "axios";
+
 
 //import api
 import { TOMTOM_API_KEY } from "@env";
@@ -211,8 +212,8 @@ export default function Destination({ route, navigation }) {
               <View style={styles.mapBox}>
                 {searchResult && Object.keys(searchResult).length !== 0 ? (
                   <MapView
-                    ref={mapReference}
                     showsUserLocation
+                    ref={mapReference}
                     key={searchResult.result.position.lat}
                     style={styles.map}
                     initialRegion={{
@@ -301,7 +302,10 @@ export default function Destination({ route, navigation }) {
                           </View>
 
                           <TouchableOpacity
-                            onPress={() => console.log("booked")}
+                            onPress={() => {
+                              navigation.navigate("Testing");
+                              console.log('booked')
+                            }}
                             style={styles.bookButton}
                           >
                             <Text style={{ color: "white", fontSize: 20 }}>
@@ -371,7 +375,7 @@ const styles = StyleSheet.create({
   },
 
   mapBox: {
-    minHeight:'30%',
+    minHeight: "30%",
     width: "95%",
 
     alignSelf: "center",
@@ -399,9 +403,8 @@ const styles = StyleSheet.create({
     borderColor: "black",
   },
   parkingLocationBox: {
-
-    minHeight:320,
-    maxHeight:320,
+    minHeight: 320,
+    maxHeight: 320,
     width: "95%",
 
     alignSelf: "center",
