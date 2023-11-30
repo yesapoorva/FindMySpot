@@ -17,8 +17,8 @@ router.post('/create-checkout-session', async (req, res) => {
       cancel_url: 'https://example.com/cancel',
     });
   
-    // res.redirect(303, session.url);
-    res.json({ sessionId: session.id });
+    res.redirect(303, session.url);
+    // res.json({ sessionId: session.id });
   });
 
   module.exports = router;
