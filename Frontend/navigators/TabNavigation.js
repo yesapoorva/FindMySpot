@@ -4,16 +4,14 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Ionicons from "@expo/vector-icons/Ionicons";
 
 //import screen
-import Home from "./screens/Home";
-import Setting from "./screens/Setting";
-import Destination from "./screens/Destination";
+import Home from "../screens/Home";
+import UserProfile from '../screens/UserProfile'
 import DestinationStack from "./DestinationStack";
 
 const Tab = createBottomTabNavigator();
 
 export default function TabNavigation() {
   return (
-    <NavigationContainer>
       <Tab.Navigator
         screenOptions={({ route }) => ({
           // bottom label
@@ -34,7 +32,7 @@ export default function TabNavigation() {
               iconName = focused ? "home" : "home-outline";
             } else if (route.name === "DestinationStack") {
               iconName = focused ? "car" : "car-outline";
-            } else if (route.name === "Settings") {
+            } else if (route.name === "UserProfile") {
               iconName = focused ? "person" : "person-outline";
             }
 
@@ -46,9 +44,8 @@ export default function TabNavigation() {
       >
         <Tab.Screen name="Home" component={Home}></Tab.Screen>
         <Tab.Screen name="DestinationStack" component={DestinationStack}></Tab.Screen>
-        <Tab.Screen name="Settings" component={Setting}></Tab.Screen>
+        <Tab.Screen name="UserProfile" component={UserProfile}></Tab.Screen>
       </Tab.Navigator>
-    </NavigationContainer>
   );
 }
 

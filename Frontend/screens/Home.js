@@ -11,9 +11,7 @@ import {
 import { useEffect } from "react";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import * as Location from "expo-location";
-//navigation
-import { NavigationContainer } from "@react-navigation/native";
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
+
 
 //import api
 import { TOMTOM_API_KEY } from "@env";
@@ -100,37 +98,6 @@ export default function Home({ navigation }) {
               ))}
             </View>
           )}
-
-          <View>
-            <TouchableOpacity
-              onPress={() => {
-                navigation.navigate("ParkingSpots");
-              }}
-            >
-              <Text>Parking Spots</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => {
-                navigation.navigate("ConfirmSpots");
-              }}
-            >
-              <Text>Confirm MySpot</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => {
-                navigation.navigate("BookingConfirmed");
-              }}
-            >
-              <Text>Booking Confirmed</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => {
-                navigation.navigate("MyBookings");
-              }}
-            >
-              <Text>My Bookings</Text>
-            </TouchableOpacity>
-          </View>
         </View>
       </TouchableWithoutFeedback>
     </KeyboardAvoidingView>

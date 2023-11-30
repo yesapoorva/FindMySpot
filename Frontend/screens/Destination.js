@@ -14,7 +14,6 @@ import * as Location from "expo-location";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import axios from "axios";
 
-
 //import api
 import { TOMTOM_API_KEY } from "@env";
 
@@ -163,7 +162,7 @@ export default function Destination({ route, navigation }) {
   function handleNavigation(result) {
     navigation.removeListener;
     navigation.navigate("ConfirmSpots", result);
-    console.log("handle data" , result)
+    console.log("handle data", result);
   }
 
   useEffect(() => {
@@ -185,10 +184,9 @@ export default function Destination({ route, navigation }) {
         await getParkingLocations(route.params);
 
         if (markerCoordinates.length > 0) {
-
-          markerCoordinates.forEach((element)=>{
-            console.log(`${element.name} | ${element.id}`)
-          })
+          markerCoordinates.forEach((element) => {
+            console.log(`${element.name} | ${element.id}`);
+          });
         }
       } else {
         console.log("direct navigation");
@@ -307,7 +305,7 @@ export default function Destination({ route, navigation }) {
                           </View>
 
                           <TouchableOpacity
-                            onPress={() =>  handleNavigation(element)}
+                            onPress={() => handleNavigation(element)}
                             style={styles.bookButton}
                           >
                             <Text style={{ color: "white", fontSize: 20 }}>
@@ -332,8 +330,10 @@ export default function Destination({ route, navigation }) {
               </ScrollView>
             </View>
           ) : (
-            <View style={{ marginTop: 360 }}>
-              <Text style={{ fontSize: 36 }}>Please search location first</Text>
+            <View>
+              <Text style={{ fontSize: 24, alignSelf: "center" }}>
+                Please search location first
+              </Text>
             </View>
           )}
         </View>
@@ -364,7 +364,6 @@ const styles = StyleSheet.create({
     alignSelf: "center",
 
     marginVertical: 40,
-  
 
     display: "flex",
     flexDirection: "row",

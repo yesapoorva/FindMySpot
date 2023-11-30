@@ -24,11 +24,11 @@ import {
   ExtraText,
   TextLink,
   TextLinkContent,
-} from "./../components/styles";
+} from "../Components/styles";
 
 const { brand, darklight, primary } = Colors;
 
-import KeyboardWrapper from "../components/keyboardWrapper";
+import KeyboardWrapper from "../Components/keyboardWrapper";
 
 const Login = ({ navigation }) => {
   const [hidePassword, setHidePassword] = useState(true);
@@ -49,7 +49,7 @@ const Login = ({ navigation }) => {
 
       if (message === "User logged in successfully") {
         console.log("Navigating to Home page with data:", result);
-        navigation.navigate("Home", { userData: result });
+        navigation.navigate("TabNavigation", { userData: result });
         setSubmitting(false);
       } else {
         console.log("Signin failed. Response Message:", message);

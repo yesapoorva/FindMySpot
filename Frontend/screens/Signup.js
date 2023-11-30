@@ -26,11 +26,11 @@ import {
   ExtraText,
   TextLink,
   TextLinkContent,
-} from "./../components/styles";
+} from "../Components/styles";
 
 const { brand, darklight, primary } = Colors;
 
-import KeyboardWrapper from "../components/keyboardWrapper";
+import KeyboardWrapper from "../Components/keyboardWrapper";
 
 const Signup = () => {
   const [hidePassword, setHidePassword] = useState(true);
