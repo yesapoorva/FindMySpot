@@ -21,7 +21,6 @@ import { TOMTOM_API_KEY } from "@env";
 import { useState } from "react";
 import axios from "axios";
 
-console.log("tomto key===", TOMTOM_API_KEY);
 
 export default function Home({ navigation }) {
   const [searchInput, setSearchInput] = useState("");
@@ -94,7 +93,6 @@ export default function Home({ navigation }) {
                   <View
                     key={index}
                     style={styles.list}
-                    onPress={() => console.log("pressed")}
                   >
                     <Text>{result.address.freeformAddress}</Text>
                     {}
