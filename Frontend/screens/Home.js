@@ -21,7 +21,6 @@ import { TOMTOM_API_KEY } from "@env";
 import { useState } from "react";
 import axios from "axios";
 
-
 export default function Home({ navigation }) {
   const [searchInput, setSearchInput] = useState("");
   const [searchResult, setSearchResult] = useState([]);
@@ -52,10 +51,10 @@ export default function Home({ navigation }) {
   }
 
   function handleNavigation(result) {
-    navigation.navigate("DestinationStack", { 
-      screen:'Destination',
-      params:{result},
-     });
+    navigation.navigate("DestinationStack", {
+      screen: "Destination",
+      params: { result },
+    });
   }
 
   return (
@@ -93,10 +92,7 @@ export default function Home({ navigation }) {
                   key={index}
                   onPress={() => handleNavigation(result)}
                 >
-                  <View
-                    key={index}
-                    style={styles.list}
-                  >
+                  <View key={index} style={styles.list}>
                     <Text>{result.address.freeformAddress}</Text>
                     {}
                   </View>
@@ -104,6 +100,37 @@ export default function Home({ navigation }) {
               ))}
             </View>
           )}
+
+          <View>
+            <TouchableOpacity
+              onPress={() => {
+                navigation.navigate("ParkingSpots");
+              }}
+            >
+              <Text>Parking Spots</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => {
+                navigation.navigate("ConfirmSpots");
+              }}
+            >
+              <Text>Confirm MySpot</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => {
+                navigation.navigate("BookingConfirmed");
+              }}
+            >
+              <Text>Booking Confirmed</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => {
+                navigation.navigate("MyBookings");
+              }}
+            >
+              <Text>My Bookings</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </TouchableWithoutFeedback>
     </KeyboardAvoidingView>

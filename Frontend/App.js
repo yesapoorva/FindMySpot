@@ -1,31 +1,36 @@
-import { StyleSheet, Text, View } from "react-native";
+import React from "react";
 
-import TabNavigation from "./TabNavigation";
+// screens
+
+import RootStack from "./navigators/RootStack";
 
 export default function App() {
-  
-  return(
-    <TabNavigation></TabNavigation>
-  )
-
-
+  return <RootStack />;
 }
 
+// import { StyleSheet, Text, View } from "react-native";
 
+// import TabNavigation from "./TabNavigation";
 
-const styles = StyleSheet.create({
-  container: {
- 
-    backgroundColor: "#ffbbbb",
-   
+// export default function App() {
 
-    paddingTop: 48,
-    paddingBottom: 36,
-    //paddingHorizontal:2
+//   return(
+//     <TabNavigation></TabNavigation>
+//   )
 
-    height:700,
+// }
 
-   
-  },
+// const styles = StyleSheet.create({
+//   container: {
 
-});
+//     backgroundColor: "#ffbbbb",
+
+//     paddingTop: 48,
+//     paddingBottom: 36,
+//     //paddingHorizontal:2
+
+//     height:700,
+
+//   },
+
+// });

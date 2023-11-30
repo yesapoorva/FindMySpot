@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
-import { Colors } from "../Components/styles";
+import { Colors } from "./../components/styles";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 
 const { brand, darklight, primary } = Colors;

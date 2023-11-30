@@ -2,7 +2,7 @@ import { View , Text , StyleSheet} from "react-native"
 
 
 
-export default function Setting({navigation}){
+export default function UserProfile({navigation}){
     return(
         <View style={styles.container}>
             <Text style={{alignSelf:'center'}}> setting screen </Text>
