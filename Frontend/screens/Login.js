@@ -24,11 +24,11 @@ import {
   ExtraText,
   TextLink,
   TextLinkContent,
-} from "../Components/styles";
+} from "./../components/styles";
 
 const { brand, darklight, primary } = Colors;
 
-import KeyboardWrapper from "../Components/keyboardWrapper";
+import KeyboardWrapper from "./../components/keyboardWrapper";
 
 const Login = ({ navigation }) => {
   const [hidePassword, setHidePassword] = useState(true);

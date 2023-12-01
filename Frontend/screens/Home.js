@@ -7,11 +7,12 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
   TouchableOpacity,
+  Button,
 } from "react-native";
+import { Line } from "./../components/styles";
 import { useEffect } from "react";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import * as Location from "expo-location";
-
 
 //import api
 import { TOMTOM_API_KEY } from "@env";
@@ -98,6 +99,39 @@ export default function Home({ navigation }) {
               ))}
             </View>
           )}
+          <TouchableOpacity>
+            <Button
+              title="Go to ConfirmSpots"
+              onPress={() =>
+                navigation.navigate("ConfirmSpots", { screen: "ConfirmSpots" })
+              }
+            />
+          </TouchableOpacity>
+          <View>
+            <View>
+              <Text style={styles.SectionHead}>Upcoming Bookings</Text>
+              <View style={styles.Card}>
+                <Text style={styles.Content}>Date: 30th November, 2023</Text>
+                <Text  style={styles.Content}>YourSpot:</Text>
+                <Text  style={styles.Content}>46, Richmond Rd, Victoria Layout,  Bengaluru, Karnataka 560025</Text>
+                <Text  style={styles.Content}>From : 06: 00 PM</Text>
+                <Text  style={styles.Content}>From : 09: 00 PM</Text>
+                <Text  style={styles.Content}>Tariff : 60/-</Text>
+              </View>
+            </View>
+            <Line />
+            <View>
+              <Text style={styles.SectionHead}>Previous Bookings</Text>
+              <View style={styles.Card}>
+                <Text style={styles.Content}>Date: 28th November, 2023</Text>
+                <Text  style={styles.Content}>YourSpot:</Text>
+                <Text  style={styles.Content}>36, Infosys Campus, Electronic City,  Bengaluru, Karnataka 560025</Text>
+                <Text  style={styles.Content}>From : 06: 00 PM</Text>
+                <Text  style={styles.Content}>From : 08: 00 PM</Text>
+                <Text  style={styles.Content}>Tariff : 40/-</Text>
+              </View>
+            </View>
+          </View>
         </View>
       </TouchableWithoutFeedback>
     </KeyboardAvoidingView>
@@ -108,7 +142,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     marginTop: 48,
-
+    padding: 15,
     borderWidth: 2,
     borderStyle: "solid",
     borderColor: "red",
@@ -116,32 +150,23 @@ const styles = StyleSheet.create({
   heading: {
     height: 60,
 
-    marginVertical: 40,
-
     display: "flex",
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
-
-    // borderWidth: 2,
-    // borderStyle: "solid",
-    // borderColor: "black",
   },
 
   searchBox: {
     height: 48,
     marginHorizontal: "5%",
-
     display: "flex",
     flexDirection: "row",
     alignItems: "center",
-
     borderWidth: 1.5,
     borderRadius: 10,
     borderColor: "#0F81C7",
     backgroundColor: "#ffffff",
     color: "black",
-
     // Box shadow for iOS
     shadowColor: "#000",
     shadowOffset: {
@@ -186,4 +211,29 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 4,
   },
+  Card: {
+    display: "flex",
+    flexDirection: "column",
+    padding: 15,
+    margin: 10,
+    backgroundColor: "#F1F2F6",
+    borderRadius: 10,
+    width: "95%",
+    height: 200,
+    borderColor: "#0F81C7",
+    borderWidth: 3,
+  },
+  SectionHead: {
+    fontSize: 24,
+    fontWeight: "bold",
+    textDecorationLine: "underline",
+    marginBottom: 5,
+  },
+  Content: {
+    fontSize: 18,
+    marginBottom: 5
+  },
+  ContentDate: {
+    flexDirection: "row",
+  }
 });

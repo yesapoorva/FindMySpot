@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   ActivityIndicator,
 } from "react-native";
-import { Colors } from "../Components/styles";
+import { Colors } from "./../components/styles";
 
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import axios from "axios";
@@ -23,6 +23,12 @@ const ConfirmSpots = ({ route, navigation }) => {
   const [fromTime, setFromTime] = useState("Select from Time");
   const [toTime, setToTime] = useState("Select To Time");
 
+  // Added state to track date and time selection
+  const [isDateSelected, setDateSelected] = useState(false);
+  const [isFromTimeSelected, setFromTimeSelected] = useState(false);
+  // State for Date selection validation
+  const [dateError, setDateError] = useState(null);
+
   const showDatePicker = () => {
     setDatePickerVisibility(true);
   };
@@ -32,13 +38,21 @@ const ConfirmSpots = ({ route, navigation }) => {
   };
 
   const handleDateConfirm = (date) => {
-    // console.warn("A Date has been picked: ", date);
-    console.log("A Date has been picked: ", date);
-    const dt = new Date(date);
-    const x = dt.toISOString().split("T");
-    const x1 = x[0].split("-");
-    setSelectedDate(x1[2] + "/" + x1[1] + "/" + x1[0]);
-    hideDatePicker();
+    const selectedDate = new Date(date);
+    const currentDate = new Date();
+
+    // Validate that selected date is equal to or greater than today's date
+    if (selectedDate >= currentDate) {
+      const x = selectedDate.toISOString().split("T");
+      const x1 = x[0].split("-");
+      setSelectedDate(x1[2] + "/" + x1[1] + "/" + x1[0]);
+      hideDatePicker();
+      // Clearing the error message if date is valid
+      setDateError(null);
+    } else {
+      console.log("Selected date must be equal to or greater than today");
+      setDateError("Selected date must be equal to or greater than today");
+    }
   };
 
   const showFromTimePicker = () => {
@@ -50,13 +64,14 @@ const ConfirmSpots = ({ route, navigation }) => {
   };
 
   const handleFromTimeConfirm = (date) => {
-    //console.warn("A Time has been picked: ", date);
-    console.log("A Time has been picked: ", date);
     const dt = new Date(date);
     const x = dt.toLocaleTimeString();
 
     setFromTime(x);
     hideFromTimePicker();
+
+    // Enable ToTime selection when FromTime is selected
+    setFromTimeSelected(true);
   };
 
   const showToTimePicker = () => {
@@ -68,19 +83,20 @@ const ConfirmSpots = ({ route, navigation }) => {
   };
 
   const handleToTimeConfirm = (date) => {
-    //console.warn("A Time has been picked: ", date);
-    console.log("A Time has been picked: ", date);
     const dt = new Date(date);
-    const x = dt.toLocaleTimeString();
-    console.log(x);
-    setToTime(x);
-    hideToTimePicker();
+    const selectedToTime = dt.toLocaleTimeString();
+
+    // Validate that ToTime is greater than FromTime
+    if (new Date(selectedToTime) > new Date(fromTime)) {
+      setToTime(selectedToTime);
+      hideToTimePicker();
+    } else {
+      console.log("To Time must be greater than From Time");
+    }
   };
 
   async function handleBooking(data) {
     if (data.id !== null && data.id !== undefined) {
-      console.log("data sending in axios", data.id);
-
       const URL = `https://findmyspot.onrender.com/api/parkingspaces/reserve/${data.id}`;
       await axios
         .get(URL)
@@ -105,7 +121,6 @@ const ConfirmSpots = ({ route, navigation }) => {
       <View style={styles.MySpot}>
         <View style={styles.Card}>
           <Text style={styles.Date}>MySpot:</Text>
-
           {parkingData === undefined ? (
             <ActivityIndicator />
           ) : (
@@ -125,7 +140,10 @@ const ConfirmSpots = ({ route, navigation }) => {
         </View>
         <View style={styles.duration}>
           <View style={styles.fromCard}>
-            <TouchableOpacity onPress={() => showFromTimePicker()}>
+            {/* Disable FromTime selection if the date is not selected */}
+            <TouchableOpacity
+              onPress={() => isDateSelected && showFromTimePicker()}
+            >
               <Text style={styles.Date}>From: {fromTime} </Text>
             </TouchableOpacity>
             <DateTimePickerModal
@@ -137,7 +155,10 @@ const ConfirmSpots = ({ route, navigation }) => {
             />
           </View>
           <View style={styles.toCard}>
-            <TouchableOpacity onPress={() => showToTimePicker()}>
+            {/* Disable ToTime selection if FromTime is not selected */}
+            <TouchableOpacity
+              onPress={() => isFromTimeSelected && showToTimePicker()}
+            >
               <Text style={styles.Date}>To: {toTime} </Text>
             </TouchableOpacity>
             <DateTimePickerModal
@@ -152,6 +173,12 @@ const ConfirmSpots = ({ route, navigation }) => {
         <TouchableOpacity
           onPress={() => handleBooking(parkingData)}
           style={styles.button}
+          // Disable the button if any of the required fields is not filled
+          disabled={
+            !isDateSelected ||
+            fromTime === "Select from Time" ||
+            toTime === "Select To Time"
+          }
         >
           <Text style={styles.buttonText}>Book MySpot</Text>
         </TouchableOpacity>
