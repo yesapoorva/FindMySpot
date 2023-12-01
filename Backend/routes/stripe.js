@@ -13,7 +13,7 @@ router.post('/create-checkout-session', async (req, res) => {
         },
       ],
       mode: 'payment',
-      success_url: 'https://example.com/success', // Placeholder URL
+      success_url: 'https://example.com/success', 
       cancel_url: 'https://example.com/cancel',
     });
   
