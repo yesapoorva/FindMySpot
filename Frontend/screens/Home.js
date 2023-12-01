@@ -19,9 +19,12 @@ import { TOMTOM_API_KEY } from "@env";
 import { useState } from "react";
 import axios from "axios";
 
-export default function Home({ navigation }) {
+export default function Home({ navigation  ,route }) {
   const [searchInput, setSearchInput] = useState("");
   const [searchResult, setSearchResult] = useState([]);
+
+
+  //console.log("Home compent route====" , route.params)
 
   useEffect(() => {
     async function getLocation() {
@@ -48,10 +51,12 @@ export default function Home({ navigation }) {
       .catch((e) => console.log(e));
   }
 
-  function handleNavigation(result) {
+  function handleNavigation(data) {
+
+    const result = {...data,...route.params}
     navigation.navigate("DestinationStack", {
       screen: "Destination",
-      params: { result },
+      params: {result},
     });
   }
 

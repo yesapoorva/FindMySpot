@@ -23,6 +23,8 @@ const ConfirmSpots = ({ route, navigation }) => {
   const [fromTime, setFromTime] = useState("Select from Time");
   const [toTime, setToTime] = useState("Select To Time");
 
+  const [authToken , getAuthToken] = useState("");
+
   const showDatePicker = () => {
     setDatePickerVisibility(true);
   };
@@ -77,6 +79,7 @@ const ConfirmSpots = ({ route, navigation }) => {
     hideToTimePicker();
   };
 
+
   async function handleBooking(data) {
     if (data.id !== null && data.id !== undefined) {
       console.log("data sending in axios", data.id);
@@ -95,10 +98,12 @@ const ConfirmSpots = ({ route, navigation }) => {
   }
 
   useEffect(() => {
-    getParkingData(route.params);
+    if(route.params !== null && route.params !== undefined){
+      getParkingData(route.params);
+      getAuthToken(route.params.userData.token)
+    }
   }, [route.params]);
 
-  console.log("data===", parkingData);
   return (
     <View style={styles.container}>
       <Text style={styles.PageHeader}>Confirm MySpot</Text>
