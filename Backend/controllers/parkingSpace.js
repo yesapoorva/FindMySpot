@@ -89,7 +89,7 @@ const nearestParkingSpace = async (req, res) => {
     const destLat = parseFloat(destinationLatitude);
     const destLng = parseFloat(destinationLongitude);
 
-    const allParkingSpaces = await ParkingSpace.find();
+    const allParkingSpaces = await ParkingSpace.find({ status: 'Available' });
 
     if (!allParkingSpaces || allParkingSpaces.length === 0) {
       return res.status(404).json({ error: 'No parking spaces found.' });   
