@@ -24,7 +24,7 @@ export default function Home({ navigation  ,route }) {
   const [searchResult, setSearchResult] = useState([]);
 
 
-  //console.log("Home compent route====" , route.params)
+
 
   useEffect(() => {
     async function getLocation() {

@@ -76,10 +76,8 @@ export default function Destination({ route, navigation }) {
           setMarkercoordinates([]);
           setLoading(false);
         });
-    }
-
-    else{
-      console.log("error in data fetching")
+    } else {
+      console.log("error in data fetching");
     }
   }
 
@@ -159,27 +157,21 @@ export default function Destination({ route, navigation }) {
   }
 
   function handleNavigation(result) {
-
-    const updatedData = {...result, userData:route.params.result.userData}
+    const updatedData = { ...result, userData: route.params.result.userData };
     navigation.removeListener;
     navigation.navigate("ConfirmSpots", updatedData);
   }
-
-
 
   useEffect(() => {
     (async () => {
       if (route.params !== undefined) {
         getSearchResult(route.params);
-
         await getParkingLocations(route.params);
-
       } else {
         console.log("direct navigation");
       }
     })();
   }, [route.params, userCoOrdinates]);
-
 
   useEffect(() => {
     (async () => {
@@ -191,7 +183,6 @@ export default function Destination({ route, navigation }) {
       }
     })();
   }, []);
-
 
   useEffect(() => {
     if (markerCoordinates.length > 0) {
