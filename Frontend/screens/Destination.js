@@ -23,7 +23,6 @@ export default function Destination({ route, navigation }) {
     longitude: null,
     latitude: null,
   });
-  const [parkingSpaces, setParkingSpaces] = useState([]);
   const [markerCoordinates, setMarkercoordinates] = useState([]);
   const [loading, setLoading] = useState(false);
   const mapReference = useRef(null); //for map referance
@@ -52,14 +51,11 @@ export default function Destination({ route, navigation }) {
     ) {
       const lattitude = initialLocation.result.position.lat;
       const longitude = initialLocation.result.position.lon;
-      const address = initialLocation.result.address.freeformAddress;
       const URL = `https://findmyspot.onrender.com/api/parkingspaces/nearest?destinationLongitude=${longitude}&destinationLatitude=${lattitude}`;
       setLoading(true);
       await axios
         .get(URL)
         .then((response) => {
-          setParkingSpaces(response.data);
-
           //make marker data from API
           const coordinates = response.data.map((element) => {
             return {
@@ -77,10 +73,11 @@ export default function Destination({ route, navigation }) {
         })
         .catch((error) => {
           console.log(error);
-          setParkingSpaces([]);
           setMarkercoordinates([]);
           setLoading(false);
         });
+    } else {
+      console.log("error in data fetching");
     }
   }
 
@@ -160,10 +157,21 @@ export default function Destination({ route, navigation }) {
   }
 
   function handleNavigation(result) {
+    const updatedData = { ...result, userData: route.params.result.userData };
     navigation.removeListener;
-    navigation.navigate("ConfirmSpots", result);
-    console.log("handle data", result);
+    navigation.navigate("ConfirmSpots", updatedData);
   }
+
+  useEffect(() => {
+    (async () => {
+      if (route.params !== undefined) {
+        getSearchResult(route.params);
+        await getParkingLocations(route.params);
+      } else {
+        console.log("direct navigation");
+      }
+    })();
+  }, [route.params, userCoOrdinates]);
 
   useEffect(() => {
     (async () => {
@@ -177,27 +185,8 @@ export default function Destination({ route, navigation }) {
   }, []);
 
   useEffect(() => {
-    (async () => {
-      if (route.params !== undefined) {
-        getSearchResult(route.params);
-
-        await getParkingLocations(route.params);
-
-        if (markerCoordinates.length > 0) {
-          markerCoordinates.forEach((element) => {
-            console.log(`${element.name} | ${element.id}`);
-          });
-        }
-      } else {
-        console.log("direct navigation");
-      }
-    })();
-  }, [route.params, userCoOrdinates]);
-
-  useEffect(() => {
     if (markerCoordinates.length > 0) {
       fitToCoordinate();
-      //console.log("length===========",markerCoordinates.length)
     }
   }, [markerCoordinates]);
 

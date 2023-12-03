@@ -57,7 +57,7 @@ const Signup = () => {
 
       if (message === 'User created successfully') {
         console.log('Navigating to Home page with data:', result);
-        navigation.navigate('Home', { userData: result });
+        navigation.navigate('TabNavigation', { userData: result });
         setSubmitting(false);
       } else {
         console.log('Signup failed. Response Message:', message);

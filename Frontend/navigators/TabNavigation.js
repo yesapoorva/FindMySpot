@@ -10,7 +10,8 @@ import DestinationStack from "./DestinationStack";
 
 const Tab = createBottomTabNavigator();
 
-export default function TabNavigation() {
+export default function TabNavigation({route}) {
+
   return (
       <Tab.Navigator
         screenOptions={({ route }) => ({
@@ -42,9 +43,9 @@ export default function TabNavigation() {
           tabBarInactiveTintColor: "black",
         })}
       >
-        <Tab.Screen name="Home" component={Home}></Tab.Screen>
-        <Tab.Screen name="DestinationStack" component={DestinationStack}></Tab.Screen>
-        <Tab.Screen name="UserProfile" component={UserProfile}></Tab.Screen>
+        <Tab.Screen name="Home" component={Home} initialParams={route.params}></Tab.Screen>
+        <Tab.Screen name="DestinationStack" component={DestinationStack} ></Tab.Screen>
+        <Tab.Screen name="UserProfile" component={UserProfile} initialParams={route.params}></Tab.Screen>
       </Tab.Navigator>
   );
 }

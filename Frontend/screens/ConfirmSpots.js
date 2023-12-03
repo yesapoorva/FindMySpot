@@ -5,6 +5,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   ActivityIndicator,
+  Alert,
 } from "react-native";
 import { Colors } from "../Components/styles";
 
@@ -19,9 +20,11 @@ const ConfirmSpots = ({ route, navigation }) => {
   const [isFromTimePickerVisible, setFromTimePickerVisibility] =
     useState(false);
   const [isToTimePickerVisible, setToTimePickerVisibility] = useState(false);
-  const [selectedDate, setSelectedDate] = useState("Select Date");
+  const [selectedDate, setSelectedDate] = useState("Date");
   const [fromTime, setFromTime] = useState("Select from Time");
   const [toTime, setToTime] = useState("Select To Time");
+
+  const [authToken, getAuthToken] = useState("");
 
   const showDatePicker = () => {
     setDatePickerVisibility(true);
@@ -51,9 +54,9 @@ const ConfirmSpots = ({ route, navigation }) => {
 
   const handleFromTimeConfirm = (date) => {
     //console.warn("A Time has been picked: ", date);
-    console.log("A Time has been picked: ", date);
+    console.log("A From Time has been picked: ", date);
     const dt = new Date(date);
-    const x = dt.toLocaleTimeString();
+    const x = dt.toLocaleTimeString("en-IN",{timeZone:'Asia/Kolkata', hour12:false});
 
     setFromTime(x);
     hideFromTimePicker();
@@ -69,36 +72,42 @@ const ConfirmSpots = ({ route, navigation }) => {
 
   const handleToTimeConfirm = (date) => {
     //console.warn("A Time has been picked: ", date);
-    console.log("A Time has been picked: ", date);
+    console.log("A TO Time has been picked: ", date);
     const dt = new Date(date);
-    const x = dt.toLocaleTimeString();
-    console.log(x);
+    const x = dt.toLocaleTimeString("en-IN",{timeZone:'Asia/Kolkata', hour12:false});
+
+
     setToTime(x);
     hideToTimePicker();
   };
 
   async function handleBooking(data) {
-    if (data.id !== null && data.id !== undefined) {
-      console.log("data sending in axios", data.id);
+    if (data.id !== null && data.id !== undefined && selectedDate !=="Date" && fromTime !== "Select from Time" && toTime !== "Select To Time") {
+      console.log("condition passed");
+       const modifiedDate = selectedDate.split("/");
+       const updatedDate = `${modifiedDate[2]}:${modifiedDate[1]}:${modifiedDate[0]}`
 
-      const URL = `https://findmyspot.onrender.com/api/parkingspaces/reserve/${data.id}`;
-      await axios
-        .get(URL)
-        .then((response) => {
-          console.Console.log(response);
-        })
-        .catch((error) => {
-          console.log("status code==", error.response.status);
-          console.log(error);
-        });
+       const data = {
+        fromTime: `${updatedDate}T${fromTime}`,
+        toTime:`${updatedDate}T${toTime}`
+       }
+    }
+    else{
+      Alert.alert("All Mandatory Fields are not Selected", "Please select Date , From time and TO time")
+
     }
   }
 
+  console.log("seleect time date==",selectedDate , toTime , fromTime);
+
   useEffect(() => {
-    getParkingData(route.params);
+    if (route.params !== null && route.params !== undefined) {
+      getParkingData(route.params);
+      getAuthToken(route.params.userData.token);
+    }
   }, [route.params]);
 
-  console.log("data===", parkingData);
+
   return (
     <View style={styles.container}>
       <Text style={styles.PageHeader}>Confirm MySpot</Text>

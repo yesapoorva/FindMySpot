@@ -11,7 +11,7 @@ import {
 import { useEffect } from "react";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import * as Location from "expo-location";
-
+import { Line } from "./../Components/styles";
 
 //import api
 import { TOMTOM_API_KEY } from "@env";
@@ -19,7 +19,7 @@ import { TOMTOM_API_KEY } from "@env";
 import { useState } from "react";
 import axios from "axios";
 
-export default function Home({ navigation }) {
+export default function Home({ navigation, route }) {
   const [searchInput, setSearchInput] = useState("");
   const [searchResult, setSearchResult] = useState([]);
 
@@ -33,7 +33,14 @@ export default function Home({ navigation }) {
       }
     }
     getLocation();
+
   }, []);
+
+  useEffect(()=>{
+    console.log("moved to home screen , clearing searchresult array")
+    setSearchResult([]);
+  },[route.params])
+
 
   function handleSearch() {
     const URL = `https://api.tomtom.com/search/2/search/${encodeURIComponent(
@@ -48,7 +55,8 @@ export default function Home({ navigation }) {
       .catch((e) => console.log(e));
   }
 
-  function handleNavigation(result) {
+  function handleNavigation(data) {
+    const result = { ...data, ...route.params };
     navigation.navigate("DestinationStack", {
       screen: "Destination",
       params: { result },
@@ -68,6 +76,7 @@ export default function Home({ navigation }) {
               FindMySpot
             </Text>
           </View>
+
           <View style={styles.searchBox}>
             <TextInput
               style={styles.input}
@@ -84,7 +93,7 @@ export default function Home({ navigation }) {
 
           {/* for lsiting */}
           {searchResult.length > 0 && (
-            <View>
+            <View style={styles.listContainer}>
               {searchResult.map((result, index) => (
                 <TouchableOpacity
                   key={index}
@@ -98,6 +107,37 @@ export default function Home({ navigation }) {
               ))}
             </View>
           )}
+
+          <View>
+            <View>
+              <Text style={styles.SectionHead}>Upcoming Bookings</Text>
+              <View style={styles.Card}>
+                <Text style={styles.Content}>Date: 30th November, 2023</Text>
+                <Text style={styles.Content}>YourSpot:</Text>
+                <Text style={styles.Content}>
+                  46, Richmond Rd, Victoria Layout, Bengaluru, Karnataka 560025
+                </Text>
+                <Text style={styles.Content}>From : 06: 00 PM</Text>
+                <Text style={styles.Content}>From : 09: 00 PM</Text>
+                <Text style={styles.Content}>Tariff : 60/-</Text>
+              </View>
+            </View>
+            <Line />
+            <View>
+              <Text style={styles.SectionHead}>Previous Bookings</Text>
+              <View style={styles.Card}>
+                <Text style={styles.Content}>Date: 28th November, 2023</Text>
+                <Text style={styles.Content}>YourSpot:</Text>
+                <Text style={styles.Content}>
+                  36, Infosys Campus, Electronic City, Bengaluru, Karnataka
+                  560025
+                </Text>
+                <Text style={styles.Content}>From : 06: 00 PM</Text>
+                <Text style={styles.Content}>From : 08: 00 PM</Text>
+                <Text style={styles.Content}>Tariff : 40/-</Text>
+              </View>
+            </View>
+          </View>
         </View>
       </TouchableWithoutFeedback>
     </KeyboardAvoidingView>
@@ -108,7 +148,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     marginTop: 48,
-
+    padding: 15,
     borderWidth: 2,
     borderStyle: "solid",
     borderColor: "red",
@@ -116,32 +156,23 @@ const styles = StyleSheet.create({
   heading: {
     height: 60,
 
-    marginVertical: 40,
-
     display: "flex",
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
-
-    // borderWidth: 2,
-    // borderStyle: "solid",
-    // borderColor: "black",
   },
 
   searchBox: {
     height: 48,
     marginHorizontal: "5%",
-
     display: "flex",
     flexDirection: "row",
     alignItems: "center",
-
     borderWidth: 1.5,
     borderRadius: 10,
     borderColor: "#0F81C7",
     backgroundColor: "#ffffff",
     color: "black",
-
     // Box shadow for iOS
     shadowColor: "#000",
     shadowOffset: {
@@ -154,13 +185,18 @@ const styles = StyleSheet.create({
   input: {
     paddingHorizontal: "5%",
     width: "85%",
-
-    // borderWidth: 1,
-    // backgroundColor: "#ffffff",
-    // color: "black",
   },
   SearchIcon: {
     marginRight: 0,
+  },
+
+  listContainer: {
+    position: "absolute",
+    top: 130,
+    zIndex: 1,
+
+    width: "100%",
+    alignSelf: "center",
   },
   list: {
     height: 48,
@@ -185,5 +221,30 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.25,
     shadowRadius: 4,
+  },
+  Card: {
+    display: "flex",
+    flexDirection: "column",
+    padding: 15,
+    margin: 10,
+    backgroundColor: "#F1F2F6",
+    borderRadius: 10,
+    width: "95%",
+    height: 200,
+    borderColor: "#0F81C7",
+    borderWidth: 3,
+  },
+  SectionHead: {
+    fontSize: 24,
+    fontWeight: "bold",
+    textDecorationLine: "underline",
+    marginBottom: 5,
+  },
+  Content: {
+    fontSize: 18,
+    marginBottom: 5,
+  },
+  ContentDate: {
+    flexDirection: "row",
   },
 });

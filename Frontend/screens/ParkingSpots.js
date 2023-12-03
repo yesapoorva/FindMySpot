@@ -1,6 +1,6 @@
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
-import { StyledContainer } from "../components/welcomeStyles";
+import { StyledContainer } from "../Components/welcomeStyles";
 
 const ParkingSpots = () => {
     return (
