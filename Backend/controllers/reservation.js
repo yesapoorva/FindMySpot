@@ -1,5 +1,6 @@
 const ParkingSpace = require("../models/parkingSpace");
 
+//
 const reserveParkingSpace = async (req, res) => {
   try {
     const parkingSpaceId = req.params.id;
