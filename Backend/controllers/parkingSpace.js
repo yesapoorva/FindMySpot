@@ -59,7 +59,6 @@ const getParkingSpaces = async (req, res) => {
     const deltaLat = radLat2 - radLat1;
     const deltaLon = radLon2 - radLon1;
   
-    // Haversine formula
     const a =
       Math.sin(deltaLat / 2) ** 2 +
       Math.cos(radLat1) * Math.cos(radLat2) * Math.sin(deltaLon / 2) ** 2;
@@ -67,14 +66,14 @@ const getParkingSpaces = async (req, res) => {
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   
     
-    const R = 6371; // Radius of Earth in kilometers
+    const R = 6371; 
   
     const distance = R * c;
   
     return distance; // in kms
   }
   
-  const MAX_ALLOWABLE_DISTANCE = 2; //in km 1 degree of long and lat is approx equal to 100 kms 
+  const MAX_ALLOWABLE_DISTANCE = 2;  
 
 const nearestParkingSpace = async (req, res) => {
     
@@ -89,7 +88,7 @@ const nearestParkingSpace = async (req, res) => {
     const destLat = parseFloat(destinationLatitude);
     const destLng = parseFloat(destinationLongitude);
 
-    const allParkingSpaces = await ParkingSpace.find({ status: 'Available' });
+    const allParkingSpaces = await ParkingSpace.find();
 
     if (!allParkingSpaces || allParkingSpaces.length === 0) {
       return res.status(404).json({ error: 'No parking spaces found.' });   

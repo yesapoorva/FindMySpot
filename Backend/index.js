@@ -7,7 +7,8 @@ const parkingSpaceAvailabilityRoutes = require("./routes/parkingSpaceAvailabilit
 const reservationRoutes = require("./routes/reservation");
 const cors = require("cors");
 const path = require("path");
-const stripe = require("./routes/stripe")
+const stripe = require("./routes/stripe");
+// const bookingRoutes = require("./routes/booking");
 
 dotenv.config();
 connectDB();
@@ -20,6 +21,7 @@ app.use("/api/parkingspaces", parkingSpaceRoutes);
 app.use("/api/parkingspaces", parkingSpaceAvailabilityRoutes);
 app.use("/api/parkingspaces", reservationRoutes);
 app.use("/api/stripe", stripe);
+// app.use("/api/bookings", bookingRoutes);
 
 // --------------------------deployment------------------------------
 
