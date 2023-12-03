@@ -61,6 +61,8 @@ export default function Destination({ route, navigation }) {
             return {
               id: element._id,
               name: element.name,
+              status: element.status,
+              reserved: element.reserved,
               longitude: element.location.coordinates[0],
               latitude: element.location.coordinates[1],
             };
@@ -115,8 +117,8 @@ export default function Destination({ route, navigation }) {
     }
   }
 
-  function CustomMarker() {
-    return <Ionicons name="car" color="#0F81C7" size={30}></Ionicons>;
+  function CustomMarker({ color }) {
+    return <Ionicons name="car" color={color} size={30}></Ionicons>;
   }
 
   function fitToCoordinate() {
@@ -234,7 +236,11 @@ export default function Destination({ route, navigation }) {
                             }}
                             pinColor="#0F81C7"
                           >
-                            <CustomMarker />
+                            {element.reserved ? (
+                              <CustomMarker color="#d70000" />
+                            ) : (
+                              <CustomMarker color="#0F81C7" />
+                            )}
                           </Marker>
                         ))
                       : null}
@@ -265,44 +271,48 @@ export default function Destination({ route, navigation }) {
                   <View>
                     {route.params !== undefined &&
                     markerCoordinates.length !== 0 ? (
-                      markerCoordinates.map((element) => (
-                        <View key={element.id} style={styles.bookBox}>
-                          <View style={styles.textBox}>
-                            <Ionicons
-                              name="compass"
-                              color="#0F81C7"
-                              size={36}
-                            />
-                            <View>
-                              <Text style={{ marginStart: 10, flexShrink: 1 }}>
-                                {element.name}
-                              </Text>
-
+                      markerCoordinates
+                        .filter((element) => element.reserved !== true)
+                        .map((element) => (
+                          <View key={element.id} style={styles.bookBox}>
+                            <View style={styles.textBox}>
+                              <Ionicons
+                                name="compass"
+                                color="#0F81C7"
+                                size={36}
+                              />
                               <View>
-                                {element.time ? (
-                                  <Text
-                                    style={{ marginStart: 10, flexShrink: 1 }}
-                                  >
-                                    {convertTime(element.time)} (
-                                    {element.distance} m)
-                                  </Text>
-                                ) : (
-                                  <ActivityIndicator size={"small"} />
-                                )}
+                                <Text
+                                  style={{ marginStart: 10, flexShrink: 1 }}
+                                >
+                                  {element.name}
+                                </Text>
+
+                                <View>
+                                  {element.time ? (
+                                    <Text
+                                      style={{ marginStart: 10, flexShrink: 1 }}
+                                    >
+                                      {convertTime(element.time)} (
+                                      {element.distance} m)
+                                    </Text>
+                                  ) : (
+                                    <ActivityIndicator size={"small"} />
+                                  )}
+                                </View>
                               </View>
                             </View>
-                          </View>
 
-                          <TouchableOpacity
-                            onPress={() => handleNavigation(element)}
-                            style={styles.bookButton}
-                          >
-                            <Text style={{ color: "white", fontSize: 20 }}>
-                              book
-                            </Text>
-                          </TouchableOpacity>
-                        </View>
-                      ))
+                            <TouchableOpacity
+                              onPress={() => handleNavigation(element)}
+                              style={styles.bookButton}
+                            >
+                              <Text style={{ color: "white", fontSize: 20 }}>
+                                book
+                              </Text>
+                            </TouchableOpacity>
+                          </View>
+                        ))
                     ) : (
                       <Text
                         style={{
