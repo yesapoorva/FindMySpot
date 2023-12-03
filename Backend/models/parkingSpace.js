@@ -17,7 +17,10 @@ const parkingSpaceSchema = new mongoose.Schema({
   type: { type: String, enum: ['Compact', 'Standard', 'Handicap'], default: 'Standard' }, 
   reserved: { type: Boolean, default: false }, 
   reservedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-  reservationDuration: { type: Number }
+  reservationDuration: { type: Number },
+  fromTime: { type: Date }, 
+  toTime: { type: Date },  
+  // reservationScheduled: { type: Boolean, default: false },
 });
 
 const ParkingSpace = mongoose.model('ParkingSpace', parkingSpaceSchema);
