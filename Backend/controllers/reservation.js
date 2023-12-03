@@ -1,8 +1,8 @@
 const ParkingSpace = require("../models/parkingSpace");
 
-//
 const reserveParkingSpace = async (req, res) => {
   try {
+    console.log("api is working")
     const parkingSpaceId = req.params.id;
     const userId = req.user.id;
     const { fromTime, toTime } = req.body;
