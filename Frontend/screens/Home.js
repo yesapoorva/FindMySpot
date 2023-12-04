@@ -14,7 +14,7 @@ import { useEffect } from "react";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import * as Location from "expo-location";
 import { Line } from "./../Components/styles";
-
+import moment from 'moment-timezone';
 //import api
 import { TOMTOM_API_KEY } from "@env";
 
@@ -82,15 +82,16 @@ export default function Home({ navigation, route }) {
   }
 
   function convertTime(timeString) {
-    const dateObj = new Date(timeString);
-    const localDate = dateObj.toLocaleDateString("en-IN", {
-      timeZone: "Asia/Kolkata",
-    });
-    const localTime = dateObj.toLocaleTimeString("en-IN", {
-      timeZone: "Asia/Kolkata",
-    });
-
-    return { localDate: localDate, localTime: localTime };
+    try {
+      const dateObj = moment.utc(timeString).tz("Asia/Kolkata");
+      const localDate = dateObj.format("DD/MM/YYYY");
+      const localTime = dateObj.format("HH:mm a");
+  
+      return { localDate, localTime };
+    } catch (error) {
+      console.error("error  in converting time:", error);
+      return { localDate:"Error in retriving data", localTime:"Error in retriving data" };
+    }
   }
 
   useEffect(() => {
