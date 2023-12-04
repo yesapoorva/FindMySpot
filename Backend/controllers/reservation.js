@@ -1,4 +1,5 @@
 const ParkingSpace = require("../models/parkingSpace");
+const Booking = require("../models/booking")
 
 const reserveParkingSpace = async (req, res) => {
   try {
@@ -33,6 +34,16 @@ const reserveParkingSpace = async (req, res) => {
       parkingSpace.reservationDuration = new Date(toTime) - futureReservationTime; 
       await parkingSpace.save();
       console.log("parking space saved ")
+
+      const newBooking = new Booking({
+        user: userId,
+        parkingSpace: parkingSpaceId, 
+        date: futureReservationTime, 
+        fromTime: futureReservationTime,
+        toTime: new Date(toTime),
+      });
+      await newBooking.save();
+      console.log("Booking saved");
       
       setTimeout(async () => {
         

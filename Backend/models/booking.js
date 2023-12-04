@@ -11,10 +11,10 @@ const bookingSchema = new mongoose.Schema({
     ref: 'ParkingSpace',
     required: true,
   },
-  date: {
-    type: Date,
-    required: true,
-  },
+//   date: {
+//     type: Date,
+//     required: true,
+//   },
   fromTime: {
     type: Date,
     required: true,
