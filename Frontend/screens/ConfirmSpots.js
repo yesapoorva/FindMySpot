@@ -56,7 +56,10 @@ const ConfirmSpots = ({ route, navigation }) => {
     //console.warn("A Time has been picked: ", date);
     console.log("A From Time has been picked: ", date);
     const dt = new Date(date);
-    const x = dt.toLocaleTimeString("en-IN",{timeZone:'Asia/Kolkata', hour12:false});
+    const x = dt.toLocaleTimeString("en-IN", {
+      timeZone: "Asia/Kolkata",
+      hour12: false,
+    });
 
     setFromTime(x);
     hideFromTimePicker();
@@ -74,31 +77,66 @@ const ConfirmSpots = ({ route, navigation }) => {
     //console.warn("A Time has been picked: ", date);
     console.log("A TO Time has been picked: ", date);
     const dt = new Date(date);
-    const x = dt.toLocaleTimeString("en-IN",{timeZone:'Asia/Kolkata', hour12:false});
-
+    const x = dt.toLocaleTimeString("en-IN", {
+      timeZone: "Asia/Kolkata",
+      hour12: false,
+    });
 
     setToTime(x);
     hideToTimePicker();
   };
 
   async function handleBooking(data) {
-    if (data.id !== null && data.id !== undefined && selectedDate !=="Date" && fromTime !== "Select from Time" && toTime !== "Select To Time") {
-      console.log("condition passed");
-       const modifiedDate = selectedDate.split("/");
-       const updatedDate = `${modifiedDate[2]}:${modifiedDate[1]}:${modifiedDate[0]}`
+    console.log("data=", data.id);
 
-       const data = {
+    if (
+      data.id !== null &&
+      data.id !== undefined &&
+      selectedDate !== "Date" &&
+      fromTime !== "Select from Time" &&
+      toTime !== "Select To Time"
+    ) {
+      const modifiedDate = selectedDate.split("/");
+      const updatedDate = `${modifiedDate[2]}:${modifiedDate[1]}:${modifiedDate[0]}`;
+
+      const timeDateData = {
         fromTime: `${updatedDate}T${fromTime}`,
-        toTime:`${updatedDate}T${toTime}`
-       }
-    }
-    else{
-      Alert.alert("All Mandatory Fields are not Selected", "Please select Date , From time and TO time")
+        toTime: `${updatedDate}T${toTime}`,
+      };
 
+      console.log("id=", data.id);
+
+      const URL = `https://findmyspot.onrender.com/api/parkingspaces/reserve/${data.id}`;
+
+      await axios
+        .post(URL,
+          {
+            ...timeDateData,
+          },
+          {
+          headers: {
+            Authorization: authToken,
+          },
+        })
+        .then((response) => {
+          console.log(response.data);
+          Alert.alert(
+            response.data.message,
+            `place: ${response.data.parkingSpace.name}`
+          )
+
+          navigation.navigate("Home");
+        })
+        .catch((e) => {
+          console.log("meesage=",e.message)
+        });
+    } else {
+      Alert.alert(
+        "All Mandatory Fields are not Selected",
+        "Please select Date, From time and To time"
+      );
     }
   }
-
-  console.log("seleect time date==",selectedDate , toTime , fromTime);
 
   useEffect(() => {
     if (route.params !== null && route.params !== undefined) {
@@ -106,7 +144,6 @@ const ConfirmSpots = ({ route, navigation }) => {
       getAuthToken(route.params.userData.token);
     }
   }, [route.params]);
-
 
   return (
     <View style={styles.container}>
