@@ -30,9 +30,9 @@ const reserveParkingSpace = async (req, res) => {
       parkingSpace.status = 'Occupied';
       parkingSpace.reserved = true;
       parkingSpace.reservedBy = userId;
-      parkingSpace.reservationDuration = new Date(toTime) - futureReservationTime; // Store the duration in the database
+      parkingSpace.reservationDuration = new Date(toTime) - futureReservationTime; 
       await parkingSpace.save();
-
+      console.log("parking space saved ")
       
       setTimeout(async () => {
         
