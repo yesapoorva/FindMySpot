@@ -7,7 +7,7 @@ import {
   ActivityIndicator,
   Alert,
 } from "react-native";
-import { Colors } from "../Components/styles";
+import { Colors } from "../components/styles";
 
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import axios from "axios";

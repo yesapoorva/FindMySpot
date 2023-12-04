@@ -11,7 +11,7 @@ import {
 import { useEffect } from "react";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import * as Location from "expo-location";
-import { Line } from "./../Components/styles";
+import { Line } from "../components/styles";
 
 //import api
 import { TOMTOM_API_KEY } from "@env";
