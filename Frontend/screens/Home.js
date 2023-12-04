@@ -7,6 +7,8 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
   TouchableOpacity,
+  ActivityIndicator,
+  ScrollView,
 } from "react-native";
 import { useEffect } from "react";
 import Ionicons from "@expo/vector-icons/Ionicons";
@@ -22,31 +24,23 @@ import axios from "axios";
 export default function Home({ navigation, route }) {
   const [searchInput, setSearchInput] = useState("");
   const [searchResult, setSearchResult] = useState([]);
+  const [token, setToken] = useState(null);
+  const [bookingData, setBookingData] = useState(null);
 
-  useEffect(() => {
-    async function getLocation() {
-      const { status } = await Location.requestForegroundPermissionsAsync();
-      if (status === "granted") {
-        console.log("location permission granted");
-      } else {
-        console.log("location permission denied");
-      }
+  async function getLocation() {
+    const { status } = await Location.requestForegroundPermissionsAsync();
+    if (status === "granted") {
+      console.log("location permission granted");
+    } else {
+      console.log("location permission denied");
     }
-    getLocation();
+  }
 
-  }, []);
-
-  useEffect(()=>{
-    console.log("moved to home screen , clearing searchresult array")
-    setSearchResult([]);
-  },[route.params])
-
-
-  function handleSearch() {
+  async function handleSearch() {
     const URL = `https://api.tomtom.com/search/2/search/${encodeURIComponent(
       searchInput
     )}.json?key=${TOMTOM_API_KEY}`;
-    axios
+    await axios
       .get(URL)
       .then((res) => {
         setSearchResult(res.data.results);
@@ -63,83 +57,143 @@ export default function Home({ navigation, route }) {
     });
   }
 
+  async function getBookingData() {
+    if (token !== null && token !== undefined) {
+      const URL = `https://findmyspot.onrender.com/api/bookings`;
+      await axios
+        .get(URL, {
+          headers: {
+            Authorization: token,
+          },
+        })
+        .then((res) => {
+          setBookingData(res.data);
+        })
+        .catch((e) => {
+          console.log(e);
+        });
+    }
+  }
+
+  async function handleToken() {
+    if (route.params !== null && route.params !== undefined) {
+      setToken(route.params.userData.token);
+    }
+  }
+
+  function convertTime(timeString) {
+    const dateObj = new Date(timeString);
+    const localDate = dateObj.toLocaleDateString("en-IN", {
+      timeZone: "Asia/Kolkata",
+    });
+    const localTime = dateObj.toLocaleTimeString("en-IN", {
+      timeZone: "Asia/Kolkata",
+    });
+
+    return { localDate: localDate, localTime: localTime };
+  }
+
+  useEffect(() => {
+    getLocation();
+  }, []);
+
+  useEffect(() => {
+    //console.log("moved to home screen , clearing searchresult array");
+    setSearchResult([]);
+  }, [route.params]);
+
+  useEffect(() => {
+    const handleAsync = async () => {
+      await handleToken();
+      if (token !== null && token !== undefined) {
+        await getBookingData();
+      }
+    };
+    handleAsync();
+  }, [route.params, token]);
+
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       style={{ flex: 1 }}
     >
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-        <View style={styles.container}>
-          <View style={styles.heading}>
-            <Ionicons name="car" color="#0F81C7" size={48}></Ionicons>
-            <Text style={{ fontSize: 36, marginHorizontal: 16 }}>
-              FindMySpot
-            </Text>
-          </View>
-
-          <View style={styles.searchBox}>
-            <TextInput
-              style={styles.input}
-              placeholder="Enter Destination"
-              onChangeText={(e) => setSearchInput(e)}
-            ></TextInput>
-            <Ionicons
-              name="search"
-              size={36}
-              color="black"
-              onPress={handleSearch}
-            ></Ionicons>
-          </View>
-
-          {/* for lsiting */}
-          {searchResult.length > 0 && (
-            <View style={styles.listContainer}>
-              {searchResult.map((result, index) => (
-                <TouchableOpacity
-                  key={index}
-                  onPress={() => handleNavigation(result)}
-                >
-                  <View key={index} style={styles.list}>
-                    <Text>{result.address.freeformAddress}</Text>
-                    {}
-                  </View>
-                </TouchableOpacity>
-              ))}
-            </View>
-          )}
-
-          <View>
-            <View>
-              <Text style={styles.SectionHead}>Upcoming Bookings</Text>
-              <View style={styles.Card}>
-                <Text style={styles.Content}>Date: 30th November, 2023</Text>
-                <Text style={styles.Content}>YourSpot:</Text>
-                <Text style={styles.Content}>
-                  46, Richmond Rd, Victoria Layout, Bengaluru, Karnataka 560025
-                </Text>
-                <Text style={styles.Content}>From : 06: 00 PM</Text>
-                <Text style={styles.Content}>From : 09: 00 PM</Text>
-                <Text style={styles.Content}>Tariff : 60/-</Text>
-              </View>
-            </View>
-            <Line />
-            <View>
-              <Text style={styles.SectionHead}>Previous Bookings</Text>
-              <View style={styles.Card}>
-                <Text style={styles.Content}>Date: 28th November, 2023</Text>
-                <Text style={styles.Content}>YourSpot:</Text>
-                <Text style={styles.Content}>
-                  36, Infosys Campus, Electronic City, Bengaluru, Karnataka
-                  560025
-                </Text>
-                <Text style={styles.Content}>From : 06: 00 PM</Text>
-                <Text style={styles.Content}>From : 08: 00 PM</Text>
-                <Text style={styles.Content}>Tariff : 40/-</Text>
-              </View>
-            </View>
-          </View>
+      <View style={styles.container}>
+        <View style={styles.heading}>
+          <Ionicons name="car" color="#0F81C7" size={48}></Ionicons>
+          <Text style={{ fontSize: 36, marginHorizontal: 16 }}>FindMySpot</Text>
         </View>
-      </TouchableWithoutFeedback>
+
+        <View style={styles.searchBox}>
+          <TextInput
+            style={styles.input}
+            placeholder="Enter Destination"
+            onChangeText={(e) => setSearchInput(e)}
+          ></TextInput>
+          <Ionicons
+            name="search"
+            size={36}
+            color="black"
+            onPress={handleSearch}
+          ></Ionicons>
+        </View>
+
+        {/* for lsiting */}
+        {searchResult.length > 0 && (
+          <View style={styles.listContainer}>
+            {searchResult.map((result, index) => (
+              <TouchableOpacity
+                key={index}
+                onPress={() => handleNavigation(result)}
+              >
+                <View key={index} style={styles.list}>
+                  <Text>{result.address.freeformAddress}</Text>
+                  {}
+                </View>
+              </TouchableOpacity>
+            ))}
+          </View>
+        )}
+
+        <Text style={styles.SectionHead}>Previous Bookings</Text>
+
+        <View style={styles.previousBookingContainer}>
+          {bookingData !== null && bookingData !== undefined ? (
+            <View>
+              {bookingData.length > 0 ? (
+                <View>
+                  <ScrollView style={styles.scrollStyle}>
+                    {bookingData.map((element, index) => (
+                      <View key={index} style={styles.Card}>
+                        <Text style={styles.Content}>
+                          Date: {convertTime(element.fromTime).localDate}
+                        </Text>
+                        <Text style={styles.Content}>YourSpot:</Text>
+                        <Text style={styles.Content}>
+                          {element.parkingSpaceName}
+                        </Text>
+
+                        <Text style={styles.Content}>
+                          From : {convertTime(element.fromTime).localTime}
+                        </Text>
+                        <Text style={styles.Content}>
+                          To : {convertTime(element.toTime).localTime}
+                        </Text>
+                        <Text style={styles.Content}>Tariff : 40/-</Text>
+                      </View>
+                    ))}
+                  </ScrollView>
+                </View>
+              ) : (
+                <View>
+                  <Text>no previous booking found</Text>
+                </View>
+              )}
+            </View>
+          ) : (
+            <ActivityIndicator size="large" color="#0F81C7" />
+          )}
+        </View>
+      </View>
     </KeyboardAvoidingView>
   );
 }
@@ -239,12 +293,32 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     textDecorationLine: "underline",
     marginBottom: 5,
+    marginTop: 10,
   },
   Content: {
     fontSize: 18,
     marginBottom: 5,
+    flexShrink: 1,
   },
   ContentDate: {
     flexDirection: "row",
+  },
+  previousBookingContainer: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+
+    minHeight: 450,
+  },
+  scrollStyle: {
+    minHeight: 450,
+    maxHeight: 450,
+    minWidth: "100%",
+    borderColor: "black",
+    borderWidth: 1,
+    width: "100%",
+    alignSelf: "center",
+
+    marginVertical: 20,
   },
 });
