@@ -26,9 +26,6 @@ try{
     console.log("user created successfully")
     res.status(201).json({
       message: "User created successfully",
-      // _id: user._id,
-      // name: user.name,
-      // email: user.email,
     });
   } else {
     res.status(400).json({message: "Something went wrong"});
@@ -50,9 +47,6 @@ const authUser = asyncHandler(async (req, res) => {
   if (user && (await user.matchPassword(password))) {
     res.json({
       message: "User logged in successfully",
-      // _id: user._id,
-      // name: user.name,
-      // email: user.email,
       token: generateToken(user._id),
     });
   } else {

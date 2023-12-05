@@ -17,11 +17,9 @@ const bookingSchema = new mongoose.Schema({
 //   },
   fromTime: {
     type: Date,
-    required: true,
   },
   toTime: {
     type: Date,
-    required: true,
   },
 });
 
