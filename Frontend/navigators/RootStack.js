@@ -1,15 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { Colors } from './../components/styles';
-import { Colors } from './../components/styles';
-
-
+import React, { useState, useEffect } from "react";
+import { NavigationContainer } from "@react-navigation/native";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { Colors } from "./../components/styles";
 
 // screens
-import Login from './../screens/Login';
-import Signup from './../screens/Signup';
-import TabNavigation from './TabNavigation';
+import Login from "./../screens/Login";
+import Signup from "./../screens/Signup";
+import TabNavigation from "./TabNavigation";
 
 const Stack = createNativeStackNavigator();
 
@@ -29,16 +26,13 @@ const RootStack = () => {
     checkAuthentication();
   }, []);
 
-
-
-
   return (
     <NavigationContainer>
       <Stack.Navigator
         screenOptions={{
           headerShown: false,
         }}
-        initialRouteName={userToken ? 'TabNavigation' : 'Login'}
+        initialRouteName={userToken ? "TabNavigation" : "Login"}
       >
         <Stack.Screen name="Login">
           {(props) => <Login {...props} setUserToken={setUserToken} />}
