@@ -11,7 +11,7 @@ import { Colors } from "../components/styles";
 
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import axios from "axios";
-import { getUserToken } from "../Components/secureStore";
+import { getUserToken } from "../components/secureStore";
 const { brand, darklight, primary } = Colors;
 
 const ConfirmSpots = ({ route, navigation }) => {

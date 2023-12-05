@@ -14,14 +14,13 @@ import { useEffect } from "react";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import * as Location from "expo-location";
 import { Line } from "./../components/styles";
-import moment from 'moment-timezone';
-import {getUserToken} from './../components/secureStore';
+import moment from "moment-timezone";
+import { getUserToken } from "./../components/secureStore";
 //import api
 import { TOMTOM_API_KEY } from "@env";
 
 import { useState } from "react";
 import axios from "axios";
-import moment from "moment-timezone";
 
 export default function Home({ navigation, route }) {
   const [searchInput, setSearchInput] = useState("");
@@ -106,20 +105,20 @@ export default function Home({ navigation, route }) {
     }
   }
 
-
-
   //unbooking
   async function unBookParkingSpace(parkingSpace) {
-
-
     if (token !== null && token !== undefined) {
       const URL = `https://findmyspot.onrender.com/api/parkingspaces/unreserve/${parkingSpace}`;
       await axios
-        .post(URL, {},{
-          headers: {
-            Authorization: token,
-          },
-        })
+        .post(
+          URL,
+          {},
+          {
+            headers: {
+              Authorization: token,
+            },
+          }
+        )
         .then((res) => {
           console.log("unbooked APi data==", res.data);
         })
@@ -131,9 +130,6 @@ export default function Home({ navigation, route }) {
         });
     }
   }
-
-
-
 
   async function handleToken() {
     if (route.params !== null && route.params !== undefined) {
@@ -222,7 +218,7 @@ export default function Home({ navigation, route }) {
           </View>
         )}
 
-        <Text style={styles.SectionHead}>Upcoming Bookings</Text>
+        <Text style={styles.SectionHead}>Current Bookings</Text>
 
         <View style={styles.previousBookingContainer}>
           {currentBookingData !== null && currentBookingData !== undefined ? (
@@ -243,16 +239,16 @@ export default function Home({ navigation, route }) {
                         <Text style={styles.Content}>
                           From : {convertTime(element.fromTime).localTime}
                         </Text>
-
-                        {bookingData && bookingData.length > 0 && (
-                          <TouchableOpacity
-                            onPress={() => console.log("unbooked....")}
-                          >
-                            <Text style={{ color: "red" }}>Unbook</Text>
-                          </TouchableOpacity>
-                        )}
                       </View>
                     ))}
+                    {bookingData && bookingData.length > 0 && (
+                      <TouchableOpacity
+                        style={styles.logoutContainer}
+                        onPress={() => console.log("unbooked....")}
+                      >
+                        <Text style={styles.logoutText}>Unbook</Text>
+                      </TouchableOpacity>
+                    )}
                   </ScrollView>
                 </View>
               ) : (
@@ -293,13 +289,6 @@ export default function Home({ navigation, route }) {
                         <Text style={styles.Content}>Tariff : 40/-</Text>
                       </View>
                     ))}
-                    {bookingData && bookingData.length > 0 && (
-                      <TouchableOpacity
-                        onPress={() => handleUnbook(bookingData[0])}
-                      >
-                        <Text style={{ color: "red" }}>Unbook</Text>
-                      </TouchableOpacity>
-                    )}
                   </ScrollView>
                 </View>
               ) : (
@@ -347,7 +336,7 @@ const styles = StyleSheet.create({
     borderWidth: 1.5,
     borderRadius: 10,
     borderColor: "#0F81C7",
-    backgroundColor: "#ffffff",
+    backgroundColor: "#F1F2F6",
     color: "black",
     // Box shadow for iOS
     shadowColor: "#000",
@@ -386,7 +375,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
 
     borderRadius: 10,
-    backgroundColor: "#ffffff",
+    backgroundColor: "#F1F2F6",
     color: "black",
 
     // Box shadow for iOS
@@ -433,16 +422,29 @@ const styles = StyleSheet.create({
     borderColor: "blue",
     borderWidth: 1,
     width: "100%",
-
-    minHeight: 250,
   },
   scrollStyle: {
-    minHeight: 250,
-    maxHeight: 250,
+    minHeight: 280,
+    maxHeight: 280,
     minWidth: "100%",
     borderColor: "black",
     borderWidth: 1,
     width: "100%",
+  },
+
+  logoutContainer: {
+    height: 48,
+    width: "80%",
     alignSelf: "center",
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 10,
+    backgroundColor: "#0F81C7",
+  },
+  logoutText: {
+    fontSize: 20,
+    color: "#F1F2F6",
   },
 });
