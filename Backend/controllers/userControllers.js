@@ -54,4 +54,74 @@ const authUser = asyncHandler(async (req, res) => {
   }
 });
 
-module.exports = { registerUser, authUser};
+const updateUserDetails = async (req, res) => {
+  try {
+    // const userId = req.params.id;
+    const userId = req.user.id;
+
+    const { carName, carType, vehicleNumber } = req.body;
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found.' });
+    }
+
+    const updatedUser = await User.findOneAndUpdate(
+      { _id: userId }, 
+      {
+        $set: {
+          carName: carName,
+          carType: carType,
+          vehicleNumber: vehicleNumber,
+        },
+      },
+      { new: true } 
+    );
+    
+
+    const outputUser = {
+      id: user.id,
+      username: updatedUser.name,
+      email: updatedUser.email,
+      carName: updatedUser.carName || null,
+      carType: updatedUser.carType || null,
+      vehicleNumber: updatedUser.vehicleNumber || null,
+    };
+
+    res.json({ message: 'User details updated successfully', outputUser });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+}
+
+const getUserDetails = async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found.' });
+    }
+
+    const outputUser = {
+      id: user.id,
+      username: user.name,
+      email: user.email,
+      carName: user.carName || null,
+      carType: user.carType || null,
+      vehicleNumber: user.vehicleNumber || null,
+    };
+
+    res.json(outputUser);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+}
+
+module.exports = { registerUser, authUser ,
+   updateUserDetails, 
+   getUserDetails
+};
