@@ -67,8 +67,7 @@ const ConfirmSpots = ({ route, navigation }) => {
               console.log(e.response.data);
               Alert.alert(`${e.response.data.message}`, "Please re-login");
               navigation.navigate("Login");
-            }
-            else{
+            } else {
               console.log(e);
               Alert.alert("Something went wrong , please try again");
             }

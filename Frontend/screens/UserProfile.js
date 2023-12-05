@@ -15,7 +15,16 @@ export default function UserProfile({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <Text style={{ alignSelf: "center" }}> setting screen </Text>
+      <Text style={styles.SectionHead}>User Information</Text>
+
+      <View style={styles.Card}>
+        <Text style={styles.Content}>Name:----------</Text>
+        <Text style={styles.Content}>Email:---------</Text>
+        <Text style={styles.Content}>Car Type:------</Text>
+        <Text style={styles.Content}>Car Number:-----</Text>
+        <Text style={styles.Content}>Vehicle Number:--</Text>
+        <Text style={styles.Content}>Contact:----------</Text>
+      </View>
 
       <TouchableOpacity style={styles.logoutContainer} onPress={handleLogout}>
         <Text style={styles.logoutText}>Logout</Text>
@@ -32,6 +41,31 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderStyle: "solid",
     borderColor: "red",
+  },
+
+  Card: {
+    display: "flex",
+    flexDirection: "column",
+    padding: 15,
+    margin: 10,
+    backgroundColor: "#F1F2F6",
+    borderRadius: 10,
+    width: "95%",
+    //height: 200,
+    borderColor: "#0F81C7",
+    borderWidth: 3,
+  },
+  SectionHead: {
+    fontSize: 24,
+    fontWeight: "bold",
+    textDecorationLine: "underline",
+    marginBottom: 5,
+    marginTop: 10,
+  },
+  Content: {
+    fontSize: 18,
+    marginBottom: 5,
+    flexShrink: 1,
   },
 
   logoutContainer: {
