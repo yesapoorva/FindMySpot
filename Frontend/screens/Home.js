@@ -10,6 +10,7 @@ import {
   ActivityIndicator,
   ScrollView,
 } from "react-native";
+import { Line } from "./../components/styles";
 import { useEffect } from "react";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import * as Location from "expo-location";
@@ -201,104 +202,21 @@ export default function Home({ navigation, route }) {
           ></Ionicons>
         </View>
 
-        {/* for lsiting */}
-        {searchResult.length > 0 && (
-          <View style={styles.listContainer}>
-            {searchResult.map((result, index) => (
-              <TouchableOpacity
-                key={index}
-                onPress={() => handleNavigation(result)}
-              >
-                <View key={index} style={styles.list}>
-                  <Text>{result.address.freeformAddress}</Text>
-                  {}
-                </View>
-              </TouchableOpacity>
-            ))}
-          </View>
-        )}
-
-        <Text style={styles.SectionHead}>Current Bookings</Text>
-
-        <View style={styles.previousBookingContainer}>
-          {currentBookingData !== null && currentBookingData !== undefined ? (
+          {/* for lsiting */}
+          {searchResult.length > 0 && (
             <View>
-              {currentBookingData.length > 0 ? (
-                <View>
-                  <ScrollView style={styles.scrollStyle}>
-                    {bookingData.map((element, index) => (
-                      <View key={index} style={styles.Card}>
-                        <Text style={styles.Content}>
-                          Date: {convertTime(element.fromTime).localDate}
-                        </Text>
-                        <Text style={styles.Content}>YourSpot:</Text>
-                        <Text style={styles.Content}>
-                          {element.parkingSpaceName}
-                        </Text>
-
-                        <Text style={styles.Content}>
-                          From : {convertTime(element.fromTime).localTime}
-                        </Text>
-                      </View>
-                    ))}
-                    {bookingData && bookingData.length > 0 && (
-                      <TouchableOpacity
-                        style={styles.logoutContainer}
-                        onPress={() => console.log("unbooked....")}
-                      >
-                        <Text style={styles.logoutText}>Unbook</Text>
-                      </TouchableOpacity>
-                    )}
-                  </ScrollView>
-                </View>
-              ) : (
-                <View>
-                  <Text>no current booking found</Text>
-                </View>
-              )}
+              {searchResult.map((result, index) => (
+                <TouchableOpacity
+                  key={index}
+                  onPress={() => handleNavigation(result)}
+                >
+                  <View key={index} style={styles.list}>
+                    <Text>{result.address.freeformAddress}</Text>
+                    {}
+                  </View>
+                </TouchableOpacity>
+              ))}
             </View>
-          ) : (
-            <ActivityIndicator size="large" color="#0F81C7" />
-          )}
-        </View>
-
-        <Text style={styles.SectionHead}>Previous Bookings</Text>
-
-        <View style={styles.previousBookingContainer}>
-          {bookingData !== null && bookingData !== undefined ? (
-            <View>
-              {bookingData.length > 0 ? (
-                <View>
-                  <ScrollView style={styles.scrollStyle}>
-                    {bookingData.map((element, index) => (
-                      <View key={index} style={styles.Card}>
-                        <Text style={styles.Content}>
-                          Date: {convertTime(element.fromTime).localDate}
-                        </Text>
-                        <Text style={styles.Content}>YourSpot:</Text>
-                        <Text style={styles.Content}>
-                          {element.parkingSpaceName}
-                        </Text>
-
-                        <Text style={styles.Content}>
-                          From : {convertTime(element.fromTime).localTime}
-                        </Text>
-                        <Text style={styles.Content}>
-                          To : {convertTime(element.toTime).localTime}
-                        </Text>
-                        <Text style={styles.Content}>Tariff : 40/-</Text>
-                      </View>
-                    ))}
-                  </ScrollView>
-                </View>
-              ) : (
-                <View>
-                  <Text>no previous booking found</Text>
-                </View>
-              )}
-            </View>
-          ) : (
-            <ActivityIndicator size="large" color="#0F81C7" />
           )}
         </View>
         <TouchableOpacity>
@@ -313,6 +231,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     marginTop: 48,
+    padding: 15,
     padding: 15,
     borderWidth: 2,
     borderStyle: "solid",

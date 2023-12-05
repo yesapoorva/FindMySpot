@@ -92,7 +92,6 @@ const ConfirmSpots = ({ route, navigation }) => {
       <View style={styles.MySpot}>
         <View style={styles.Card}>
           <Text style={styles.Date}>MySpot:</Text>
-
           {parkingData === undefined ? (
             <ActivityIndicator />
           ) : (
@@ -102,6 +101,12 @@ const ConfirmSpots = ({ route, navigation }) => {
         <TouchableOpacity
           onPress={() => handleBooking(parkingData)}
           style={styles.button}
+          // Disable the button if any of the required fields is not filled
+          disabled={
+            !isDateSelected ||
+            fromTime === "Select from Time" ||
+            toTime === "Select To Time"
+          }
         >
           <Text style={styles.buttonText}>Book MySpot</Text>
         </TouchableOpacity>
