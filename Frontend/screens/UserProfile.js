@@ -72,12 +72,33 @@ export default function UserProfile({ navigation }) {
 
       {userData !== null && userData !== undefined ? (
         <View style={styles.Card}>
-          <Text style={styles.Content}>Name: {userData.username}</Text>
-          <Text style={styles.Content}>Email: {userData.email}</Text>
-          <Text style={styles.Content}>Car Type: {userData.carType}</Text>
-          <Text style={styles.Content}>Car Number: {userData.carName}</Text>
           <Text style={styles.Content}>
-            Vehicle Number: {userData.vehicleNumber}
+            Name:{" "}
+            {userData.username !== null
+              ? userData.username
+              : "No data added by user"}
+          </Text>
+          <Text style={styles.Content}>
+            Email:{" "}
+            {userData.email !== null ? userData.email : "No data added by user"}
+          </Text>
+          <Text style={styles.Content}>
+            Car Type:{" "}
+            {userData.carType !== null
+              ? userData.carType
+              : "No data added by user"}
+          </Text>
+          <Text style={styles.Content}>
+            Car Number:{" "}
+            {userData.carName !== null
+              ? userData.carName
+              : "No data added by user"}
+          </Text>
+          <Text style={styles.Content}>
+            Vehicle Number:{" "}
+            {userData.vehicleNumber !== null
+              ? userData.vehicleNumber
+              : "No data added by user"}
           </Text>
         </View>
       ) : (
