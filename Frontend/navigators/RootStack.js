@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { Colors } from '../components/styles';
-import { getUserToken } from '../components/secureStore';
+import { Colors } from './../components/styles';
+
+
 
 // screens
 import Login from './../screens/Login';

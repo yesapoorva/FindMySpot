@@ -159,9 +159,9 @@ export default function Destination({ route, navigation }) {
   }
 
   function handleNavigation(result) {
-    const updatedData = { ...result, userData: route.params.result.userData };
+   
     navigation.removeListener;
-    navigation.navigate("ConfirmSpots", updatedData);
+    navigation.navigate("ConfirmSpots", result);
   }
 
   useEffect(() => {
@@ -411,9 +411,6 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     marginVertical: 10,
 
-    borderWidth: 1,
-    borderStyle: "solid",
-    borderColor: "green",
   },
   textBox: {
     height: 60,

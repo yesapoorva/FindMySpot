@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const ParkingSpace = require('../models/parkingSpace'); 
-// const { } = require('../controllers/parkingSpace');
 
 router.get('/availability', async (req, res) => {
     try {

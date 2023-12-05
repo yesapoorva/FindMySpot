@@ -51,6 +51,8 @@ const Login = ({ navigation }) => {
 
       if (message === "User logged in successfully" ) {
         await storeUserToken(result.token);
+      if (message === "User logged in successfully" ) {
+        await storeUserToken(result.token);
         console.log("Navigating to Home page with data:", result);
         navigation.navigate("TabNavigation", { userData: result });
         setUserToken(result.token);

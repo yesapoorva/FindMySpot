@@ -1,6 +1,5 @@
 const express = require('express');
 const router = express.Router();
-const ParkingSpace = require('../models/parkingSpace'); 
 const { getParkingSpaces, 
         addParkingSpaces, 
         updateParkingSpaces, 

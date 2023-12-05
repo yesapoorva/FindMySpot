@@ -11,138 +11,79 @@ import { Colors } from "../components/styles";
 
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import axios from "axios";
-
+import { getUserToken } from "../Components/secureStore";
 const { brand, darklight, primary } = Colors;
 
 const ConfirmSpots = ({ route, navigation }) => {
   const [parkingData, getParkingData] = useState();
-  const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
-  const [isFromTimePickerVisible, setFromTimePickerVisibility] =
-    useState(false);
-  const [isToTimePickerVisible, setToTimePickerVisibility] = useState(false);
-  const [selectedDate, setSelectedDate] = useState("Date");
-  const [fromTime, setFromTime] = useState("Select from Time");
-  const [toTime, setToTime] = useState("Select To Time");
+  const [asyncToken, getAsyncToken] = useState(null);
 
-  const [authToken, getAuthToken] = useState("");
-
-  const showDatePicker = () => {
-    setDatePickerVisibility(true);
-  };
-
-  const hideDatePicker = () => {
-    setDatePickerVisibility(false);
-  };
-
-  const handleDateConfirm = (date) => {
-    // console.warn("A Date has been picked: ", date);
-    console.log("A Date has been picked: ", date);
-    const dt = new Date(date);
-    const x = dt.toISOString().split("T");
-    const x1 = x[0].split("-");
-    setSelectedDate(x1[2] + "/" + x1[1] + "/" + x1[0]);
-    hideDatePicker();
-  };
-
-  const showFromTimePicker = () => {
-    setFromTimePickerVisibility(true);
-  };
-
-  const hideFromTimePicker = () => {
-    setFromTimePickerVisibility(false);
-  };
-
-  const handleFromTimeConfirm = (date) => {
-    //console.warn("A Time has been picked: ", date);
-    console.log("A From Time has been picked: ", date);
-    const dt = new Date(date);
-    const x = dt.toLocaleTimeString("en-IN", {
-      timeZone: "Asia/Kolkata",
-      hour12: false,
-    });
-
-    setFromTime(x);
-    hideFromTimePicker();
-  };
-
-  const showToTimePicker = () => {
-    setToTimePickerVisibility(true);
-  };
-
-  const hideToTimePicker = () => {
-    setToTimePickerVisibility(false);
-  };
-
-  const handleToTimeConfirm = (date) => {
-    //console.warn("A Time has been picked: ", date);
-    console.log("A TO Time has been picked: ", date);
-    const dt = new Date(date);
-    const x = dt.toLocaleTimeString("en-IN", {
-      timeZone: "Asia/Kolkata",
-      hour12: false,
-    });
-
-    setToTime(x);
-    hideToTimePicker();
-  };
+  async function getTokenFromAsyncStorage() {
+    const token = await getUserToken();
+    getAsyncToken(token);
+  }
 
   async function handleBooking(data) {
-    console.log("data=", data.id);
-
     if (
       data.id !== null &&
       data.id !== undefined &&
-      selectedDate !== "Date" &&
-      fromTime !== "Select from Time" &&
-      toTime !== "Select To Time"
+      asyncToken !== null &&
+      asyncToken !== undefined
     ) {
-      const modifiedDate = selectedDate.split("/");
-      const updatedDate = `${modifiedDate[2]}:${modifiedDate[1]}:${modifiedDate[0]}`;
-
-      const timeDateData = {
-        fromTime: `${updatedDate}T${fromTime}`,
-        toTime: `${updatedDate}T${toTime}`,
-      };
-
-      console.log("id=", data.id);
-
       const URL = `https://findmyspot.onrender.com/api/parkingspaces/reserve/${data.id}`;
-
       await axios
-        .post(URL,
+        .post(
+          URL,
+          {},
           {
-            ...timeDateData,
-          },
-          {
-          headers: {
-            Authorization: authToken,
-          },
-        })
+            headers: {
+              Authorization: asyncToken,
+            },
+          }
+        )
         .then((response) => {
           console.log(response.data);
           Alert.alert(
             response.data.message,
             `place: ${response.data.parkingSpace.name}`
-          )
-
+          );
           navigation.navigate("Home");
         })
         .catch((e) => {
-          console.log("meesage=",e.message)
+          if (e.response) {
+            console.log("status code==", e.response.status);
+
+            if (e.response.status === 400) {
+              console.log(e.response.data);
+              Alert.alert(`${e.response.data.error}`);
+            } else if (e.response.status === 404) {
+              console.log(e.response.data);
+              Alert.alert(`${e.response.data.error}`);
+            } else if (e.response.status === 401) {
+              console.log(e.response.data);
+              Alert.alert(`${e.response.data.message}`, "Please re-login");
+              navigation.navigate("Login");
+            } else if (e.response.status === 500) {
+              console.log(e.response.data);
+              Alert.alert(`${e.response.data.message}`, "Please re-login");
+              navigation.navigate("Login");
+            } else {
+              console.log(e);
+              Alert.alert("Something went wrong , please try again");
+            }
+          } else {
+            console.log(e);
+            Alert.alert("Something went wrong , please try again");
+          }
         });
-    } else {
-      Alert.alert(
-        "All Mandatory Fields are not Selected",
-        "Please select Date, From time and To time"
-      );
     }
   }
 
   useEffect(() => {
     if (route.params !== null && route.params !== undefined) {
       getParkingData(route.params);
-      getAuthToken(route.params.userData.token);
     }
+    getTokenFromAsyncStorage();
   }, [route.params]);
 
   return (
@@ -157,43 +98,6 @@ const ConfirmSpots = ({ route, navigation }) => {
           ) : (
             <Text style={styles.Content}>{parkingData.name}</Text>
           )}
-
-          <TouchableOpacity onPress={() => showDatePicker()}>
-            <Text style={styles.Date}>Date: {selectedDate} </Text>
-          </TouchableOpacity>
-          <DateTimePickerModal
-            isVisible={isDatePickerVisible}
-            mode="date"
-            onConfirm={handleDateConfirm}
-            onCancel={hideDatePicker}
-            style={{ backgroundColor: "black" }}
-          />
-        </View>
-        <View style={styles.duration}>
-          <View style={styles.fromCard}>
-            <TouchableOpacity onPress={() => showFromTimePicker()}>
-              <Text style={styles.Date}>From: {fromTime} </Text>
-            </TouchableOpacity>
-            <DateTimePickerModal
-              isVisible={isFromTimePickerVisible}
-              mode="time"
-              onConfirm={handleFromTimeConfirm}
-              onCancel={hideFromTimePicker}
-              style={{ backgroundColor: "black" }}
-            />
-          </View>
-          <View style={styles.toCard}>
-            <TouchableOpacity onPress={() => showToTimePicker()}>
-              <Text style={styles.Date}>To: {toTime} </Text>
-            </TouchableOpacity>
-            <DateTimePickerModal
-              isVisible={isToTimePickerVisible}
-              mode="time"
-              onConfirm={handleToTimeConfirm}
-              onCancel={hideToTimePicker}
-              style={{ backgroundColor: "black" }}
-            />
-          </View>
         </View>
         <TouchableOpacity
           onPress={() => handleBooking(parkingData)}
