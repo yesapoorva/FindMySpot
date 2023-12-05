@@ -1,9 +1,28 @@
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  ActivityIndicator,
+} from "react-native";
 
 import { getUserToken, deleteUserToken } from "../Components/secureStore";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import axios from "axios";
 
 export default function UserProfile({ navigation }) {
+  const [authToken, setAuthToken] = useState(null);
+  const [userData, setUserData] = useState(null);
+
+  async function getTokenFromAsyncStorage() {
+    try {
+      const token = await getUserToken();
+      setAuthToken(token);
+    } catch (error) {
+      console.error("Error getting user token:", error);
+    }
+  }
+
   async function handleLogout() {
     try {
       deleteUserToken();
@@ -13,18 +32,59 @@ export default function UserProfile({ navigation }) {
     }
   }
 
+  async function getUserDetails() {
+    console.log(" function token===", authToken);
+    if (authToken !== null && authToken !== undefined) {
+      console.log("inside if token===", authToken);
+
+      console.log("if block runned...");
+      const URL = `https://findmyspot.onrender.com/api/user/getUserDetails`;
+
+      await axios
+        .get(URL, {
+          headers: {
+            Authorization: authToken,
+          },
+        })
+        .then((res) => {
+          console.log(res.data);
+          setUserData(res.data);
+        })
+        .catch((e) => {
+          console.log("APi call error===", e);
+        });
+    } else {
+      console.log("else block runned...");
+    }
+  }
+
+  useEffect(() => {
+    getTokenFromAsyncStorage();
+  }, []);
+
+  useEffect(() => {
+    getUserDetails();
+  }, [authToken]);
+
   return (
     <View style={styles.container}>
       <Text style={styles.SectionHead}>User Information</Text>
 
-      <View style={styles.Card}>
-        <Text style={styles.Content}>Name:----------</Text>
-        <Text style={styles.Content}>Email:---------</Text>
-        <Text style={styles.Content}>Car Type:------</Text>
-        <Text style={styles.Content}>Car Number:-----</Text>
-        <Text style={styles.Content}>Vehicle Number:--</Text>
-        <Text style={styles.Content}>Contact:----------</Text>
-      </View>
+      {userData !== null && userData !== undefined ? (
+        <View style={styles.Card}>
+          <Text style={styles.Content}>Name: {userData.username}</Text>
+          <Text style={styles.Content}>Email: {userData.email}</Text>
+          <Text style={styles.Content}>Car Type: {userData.carType}</Text>
+          <Text style={styles.Content}>Car Number: {userData.carName}</Text>
+          <Text style={styles.Content}>
+            Vehicle Number: {userData.vehicleNumber}
+          </Text>
+        </View>
+      ) : (
+        <View style={styles.Card}>
+          <ActivityIndicator />
+        </View>
+      )}
 
       <TouchableOpacity style={styles.logoutContainer} onPress={handleLogout}>
         <Text style={styles.logoutText}>Logout</Text>
