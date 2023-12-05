@@ -20,6 +20,7 @@ import { TOMTOM_API_KEY } from "@env";
 
 import { useState } from "react";
 import axios from "axios";
+import moment from "moment-timezone";
 
 export default function Home({ navigation, route }) {
   const [searchInput, setSearchInput] = useState("");
@@ -57,24 +58,46 @@ export default function Home({ navigation, route }) {
     });
   }
 
-  async function getBookingData() {
-    if (token !== null && token !== undefined) {
-      const URL = `https://findmyspot.onrender.com/api/bookings`;
-      await axios
-        .get(URL, {
-          headers: {
-            Authorization: token,
-          },
-        })
-        .then((res) => {
-          setBookingData(res.data);
-        })
-        .catch((e) => {
-          console.log(e);
-        });
-    }
-  }
 
+  
+  // const handleUnbook = async (bookingToUnbook) => {
+  //   try {
+  //     // Update local state to simulate unbooking
+  //     const updatedBookings = bookingData.map((booking) => {
+  //       if (
+  //         booking.parkingSpaceName === bookingToUnbook.parkingSpaceName &&
+  //         booking.fromTime === bookingToUnbook.fromTime &&
+  //         booking.toTime === bookingToUnbook.toTime
+  //       ) {
+  //         // Update toTime to the current time to signify the end of the booking
+  //         return {
+  //           ...booking,
+  //           toTime: new Date().toISOString(),
+  //         };
+  //       }
+  //       return booking;
+  //     });
+  
+  //     setBookingData(updatedBookings);
+  
+  //     // Construct the correct unbooking endpoint with the booking ID
+  //     const unbookURL = `https://findmyspot.onrender.com/api/parkingspaces/unreserve/:id`;
+  
+  //     // Make API request to confirm unbooking using the correct endpoint and HTTP method (POST or DELETE)
+  //     await axios.post(unbookURL, null, {
+  //       headers: {
+  //         Authorization: token,
+  //       },
+  //     });
+  
+  //     // Re-fetch updated user's booking data
+  //     await fetchCurrentUserBookings();
+  //   } catch (error) {
+  //     console.error("Error unbooking:", error);
+  //     // Handle error (show error message, revert state, etc.)
+  //   }
+  // };
+  
   async function handleToken() {
     if (route.params !== null && route.params !== undefined) {
       setToken(route.params.userData.token);
@@ -82,15 +105,19 @@ export default function Home({ navigation, route }) {
   }
 
   function convertTime(timeString) {
-    const dateObj = new Date(timeString);
-    const localDate = dateObj.toLocaleDateString("en-IN", {
-      timeZone: "Asia/Kolkata",
-    });
-    const localTime = dateObj.toLocaleTimeString("en-IN", {
-      timeZone: "Asia/Kolkata",
-    });
+    try {
+      const dateObj = moment.utc(timeString).tz("Asia/Kolkata");
+      const localDate = dateObj.format("DD/MM/YYYY");
+      const localTime = dateObj.format("HH:mm a");
 
-    return { localDate: localDate, localTime: localTime };
+      return { localDate, localTime };
+    } catch (error) {
+      console.error("error  in converting time:", error);
+      return {
+        localDate: "Error in retriving data",
+        localTime: "Error in retriving data",
+      };
+    }
   }
 
   useEffect(() => {
@@ -181,6 +208,13 @@ export default function Home({ navigation, route }) {
                         <Text style={styles.Content}>Tariff : 40/-</Text>
                       </View>
                     ))}
+                    {bookingData && bookingData.length > 0 && (
+                      <TouchableOpacity
+                        onPress={() => handleUnbook(bookingData[0])}
+                      >
+                        <Text style={{ color: "red" }}>Unbook</Text>
+                      </TouchableOpacity>
+                    )}
                   </ScrollView>
                 </View>
               ) : (
@@ -193,6 +227,9 @@ export default function Home({ navigation, route }) {
             <ActivityIndicator size="large" color="#0F81C7" />
           )}
         </View>
+        <TouchableOpacity>
+          <Text></Text>
+        </TouchableOpacity>
       </View>
     </KeyboardAvoidingView>
   );

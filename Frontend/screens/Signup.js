@@ -46,7 +46,7 @@ const Signup = () => {
   };
 
 
-const handleSignup = async (credentials, setSubmitting, handleMessage, navigation, ) => {
+const handleSignup = async (credentials, setSubmitting ) => {
   handleMessage(null);
 
   try {
@@ -58,8 +58,8 @@ const handleSignup = async (credentials, setSubmitting, handleMessage, navigatio
 
     if (message === 'User created successfully') {
       // Token is being stored!
-      await storeUserToken(result.token);
-
+      await storeUserToken(JSON.stringify(result.token));
+      
       console.log('Navigating to Home page with data:', result);
       navigation.navigate('TabNavigation', { userData: result });
       setUserToken(result.token);
