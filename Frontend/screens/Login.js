@@ -28,6 +28,7 @@ import {
 
 const { brand, darklight, primary } = Colors;
 
+
 import KeyboardWrapper from "../components/keyboardWrapper";
 import { storeUserToken } from "../components/secureStore";
 
@@ -49,8 +50,6 @@ const Login = ({ navigation }) => {
       const result = response.data;
       const { message, data } = result;
 
-      if (message === "User logged in successfully" ) {
-        await storeUserToken(result.token);
       if (message === "User logged in successfully" ) {
         await storeUserToken(result.token);
         console.log("Navigating to Home page with data:", result);

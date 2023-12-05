@@ -1,6 +1,6 @@
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 
-import { getUserToken, deleteUserToken } from "../Components/secureStore";
+import { getUserToken, deleteUserToken } from "../components/secureStore";
 import { useState } from "react";
 
 export default function UserProfile({ navigation }) {

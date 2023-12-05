@@ -38,7 +38,7 @@ const Signup = () => {
   const [message, setMessage] = useState();
   const [messageType, setMessageType] = useState();
   const [userToken, setUserToken] = useState(null);
-  const [userToken, setUserToken] = useState(null);
+  
   const navigation = useNavigation();
 
   const handleMessage = (message, type = 'FAILED') => {
