@@ -31,11 +31,13 @@ import {
 const { brand, darklight, primary } = Colors;
 
 import KeyboardWrapper from "../Components/keyboardWrapper";
+import { storeUserToken } from "../Components/secureStore";
 
 const Signup = () => {
   const [hidePassword, setHidePassword] = useState(true);
   const [message, setMessage] = useState();
   const [messageType, setMessageType] = useState();
+  const [userToken, setUserToken] = useState(null);
   const navigation = useNavigation();
 
   const handleMessage = (message, type = 'FAILED') => {
@@ -43,41 +45,48 @@ const Signup = () => {
     setMessageType(type);
   };
 
-  const handleSignup = async (credentials, setSubmitting) => {
-    handleMessage(null);
 
-    try {
-      const url = 'https://findmyspot.onrender.com/api/user/signup';
-      const response = await axios.post(url, credentials);
+const handleSignup = async (credentials, setSubmitting, handleMessage, navigation, ) => {
+  handleMessage(null);
 
-      // console.log('Server Response:', response);
+  try {
+    const url = 'https://findmyspot.onrender.com/api/user/signup';
+    const response = await axios.post(url, credentials);
 
-      const result = response.data;
-      const { message, data } = result;
+    const result = response.data;
+    const { message, data } = result;
 
-      if (message === 'User created successfully') {
-        console.log('Navigating to Home page with data:', result);
-        navigation.navigate('TabNavigation', { userData: result });
-        setSubmitting(false);
-      } else {
-        console.log('Signup failed. Response Message:', message);
-        console.log('Response Data:', data);
-        setSubmitting(false);
-      }
-    } catch (error) {
-      console.log(error);
+    if (message === 'User created successfully') {
+      // Token is being stored!
+      await storeUserToken(result.token);
+
+      console.log('Navigating to Home page with data:', result);
+      navigation.navigate('TabNavigation', { userData: result });
+      setUserToken(result.token);
       setSubmitting(false);
-
-      if (error.code === 'ECONNABORTED') {
-        handleMessage('Request timeout. Please try again.');
-      } else if (error.response && error.response.data) {
-        const { message, status } = error.response.data;
-        handleMessage(message, status);
-      } else {
-        handleMessage('An error occurred. Please check your network connection.');
-      }
+    } else {
+      console.log('Signup failed. Response Message:', message);
+      console.log('Response Data:', data);
+      setSubmitting(false);
     }
-  };
+  } catch (error) {
+    console.log(error);
+    setSubmitting(false);
+
+    if (error.code === 'ECONNABORTED') {
+      handleMessage('Request timeout. Please try again.');
+    } else if (error.response && error.response.data) {
+      const { message, status } = error.response.data;
+      handleMessage(message, status);
+    } else {
+      handleMessage('An error occurred. Please check your network connection.');
+    }
+  }
+};
+
+
+
+
 
 
   return (

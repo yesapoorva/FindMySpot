@@ -29,11 +29,13 @@ import {
 const { brand, darklight, primary } = Colors;
 
 import KeyboardWrapper from "../Components/keyboardWrapper";
+import { storeUserToken } from "../Components/secureStore";
 
 const Login = ({ navigation }) => {
   const [hidePassword, setHidePassword] = useState(true);
   const [message, setMessage] = useState();
   const [messageType, setMessageType] = useState();
+  const [userToken, setUserToken] = useState(null);
 
   const handleLogin = async (credentials, setSubmitting) => {
     handleMessage(null);
@@ -47,9 +49,11 @@ const Login = ({ navigation }) => {
       const result = response.data;
       const { message, data } = result;
 
-      if (message === "User logged in successfully") {
+      if (message === "User logged in successfully" ) {
+        await storeUserToken(result.token);
         console.log("Navigating to Home page with data:", result);
         navigation.navigate("TabNavigation", { userData: result });
+        setUserToken(result.token);
         setSubmitting(false);
       } else {
         console.log("Signin failed. Response Message:", message);
