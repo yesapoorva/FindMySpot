@@ -33,13 +33,8 @@ export default function UserProfile({ navigation }) {
   }
 
   async function getUserDetails() {
-    console.log(" function token===", authToken);
     if (authToken !== null && authToken !== undefined) {
-      console.log("inside if token===", authToken);
-
-      console.log("if block runned...");
       const URL = `https://findmyspot.onrender.com/api/user/getUserDetails`;
-
       await axios
         .get(URL, {
           headers: {
@@ -53,8 +48,6 @@ export default function UserProfile({ navigation }) {
         .catch((e) => {
           console.log("APi call error===", e);
         });
-    } else {
-      console.log("else block runned...");
     }
   }
 

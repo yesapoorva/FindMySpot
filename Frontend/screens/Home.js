@@ -14,8 +14,8 @@ import { useEffect } from "react";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import * as Location from "expo-location";
 import { Line } from "../Components/styles";
-import moment from 'moment-timezone';
-import {getUserToken} from '../Components/secureStore';
+import moment from "moment-timezone";
+import { getUserToken } from "../Components/secureStore";
 //import api
 import { TOMTOM_API_KEY } from "@env";
 
@@ -27,6 +27,13 @@ export default function Home({ navigation, route }) {
   const [searchResult, setSearchResult] = useState([]);
   const [token, setToken] = useState(null);
   const [bookingData, setBookingData] = useState(null);
+  const [currentBookingData, setCurrentBookingData] = useState(null);
+  const [asyncToken, getAsyncToken] = useState(null);
+
+  async function getTokenFromAsyncStorage() {
+    const token = await getUserToken();
+    getAsyncToken(token);
+  }
 
   async function getLocation() {
     const { status } = await Location.requestForegroundPermissionsAsync();
@@ -76,6 +83,57 @@ export default function Home({ navigation, route }) {
     }
   }
 
+  async function getCurrentBookingData() {
+    if (token !== null && token !== undefined) {
+      const URL = `https://findmyspot.onrender.com/api/currentBookings`;
+      await axios
+        .get(URL, {
+          headers: {
+            Authorization: token,
+          },
+        })
+        .then((res) => {
+          setCurrentBookingData(res.data);
+          console.log("data from current booking APi==", res.data);
+        })
+        .catch((e) => {
+          if (e.responce) {
+            console.log(e.responce.data);
+          }
+          console.log("current booking APi call error===", e);
+        });
+    }
+  }
+
+
+
+  //unbooking
+  async function unBookParkingSpace(parkingSpace) {
+
+
+    if (token !== null && token !== undefined) {
+      const URL = `https://findmyspot.onrender.com/api/parkingspaces/unreserve/${parkingSpace}`;
+      await axios
+        .post(URL, {},{
+          headers: {
+            Authorization: token,
+          },
+        })
+        .then((res) => {
+          console.log("unbooked APi data==", res.data);
+        })
+        .catch((e) => {
+          if (e.responce) {
+            console.log(e.responce.data);
+          }
+          console.log("unbooked  APi call error===", e);
+        });
+    }
+  }
+
+
+
+
   async function handleToken() {
     if (route.params !== null && route.params !== undefined) {
       setToken(route.params.userData.token);
@@ -87,11 +145,14 @@ export default function Home({ navigation, route }) {
       const dateObj = moment.utc(timeString).tz("Asia/Kolkata");
       const localDate = dateObj.format("DD/MM/YYYY");
       const localTime = dateObj.format("HH:mm a");
-  
+
       return { localDate, localTime };
     } catch (error) {
       console.error("error  in converting time:", error);
-      return { localDate:"Error in retriving data", localTime:"Error in retriving data" };
+      return {
+        localDate: "Error in retriving data",
+        localTime: "Error in retriving data",
+      };
     }
   }
 
@@ -107,12 +168,16 @@ export default function Home({ navigation, route }) {
   useEffect(() => {
     const handleAsync = async () => {
       await handleToken();
+      getTokenFromAsyncStorage();
       if (token !== null && token !== undefined) {
         await getBookingData();
+        await getCurrentBookingData();
       }
     };
     handleAsync();
   }, [route.params, token]);
+
+  console.log("current booknig dat-===", currentBookingData);
 
   return (
     <KeyboardAvoidingView
@@ -155,6 +220,50 @@ export default function Home({ navigation, route }) {
             ))}
           </View>
         )}
+
+        <Text style={styles.SectionHead}>Upcoming Bookings</Text>
+
+        <View style={styles.previousBookingContainer}>
+          {currentBookingData !== null && currentBookingData !== undefined ? (
+            <View>
+              {currentBookingData.length > 0 ? (
+                <View>
+                  <ScrollView style={styles.scrollStyle}>
+                    {bookingData.map((element, index) => (
+                      <View key={index} style={styles.Card}>
+                        <Text style={styles.Content}>
+                          Date: {convertTime(element.fromTime).localDate}
+                        </Text>
+                        <Text style={styles.Content}>YourSpot:</Text>
+                        <Text style={styles.Content}>
+                          {element.parkingSpaceName}
+                        </Text>
+
+                        <Text style={styles.Content}>
+                          From : {convertTime(element.fromTime).localTime}
+                        </Text>
+
+                        {bookingData && bookingData.length > 0 && (
+                          <TouchableOpacity
+                            onPress={() => console.log("unbooked....")}
+                          >
+                            <Text style={{ color: "red" }}>Unbook</Text>
+                          </TouchableOpacity>
+                        )}
+                      </View>
+                    ))}
+                  </ScrollView>
+                </View>
+              ) : (
+                <View>
+                  <Text>no current booking found</Text>
+                </View>
+              )}
+            </View>
+          ) : (
+            <ActivityIndicator size="large" color="#0F81C7" />
+          )}
+        </View>
 
         <Text style={styles.SectionHead}>Previous Bookings</Text>
 
@@ -310,17 +419,19 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
 
-    minHeight: 450,
+    borderColor: "blue",
+    borderWidth: 1,
+    width: "100%",
+
+    minHeight: 250,
   },
   scrollStyle: {
-    minHeight: 450,
-    maxHeight: 450,
+    minHeight: 250,
+    maxHeight: 250,
     minWidth: "100%",
     borderColor: "black",
     borderWidth: 1,
     width: "100%",
     alignSelf: "center",
-
-    marginVertical: 20,
   },
 });
