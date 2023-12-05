@@ -10,7 +10,7 @@ const userSchema = new mongoose.Schema(
     carType: String,
     vehicleNumber: String,
   },
-  { timestaps: true }
+  { timestamps: true }
 );
 
 userSchema.methods.matchPassword = async function (enteredPassword) {
