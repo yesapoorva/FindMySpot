@@ -63,6 +63,14 @@ const ConfirmSpots = ({ route, navigation }) => {
               console.log(e.response.data);
               Alert.alert(`${e.response.data.message}`, "Please re-login");
               navigation.navigate("Login");
+            } else if (e.response.status === 500) {
+              console.log(e.response.data);
+              Alert.alert(`${e.response.data.message}`, "Please re-login");
+              navigation.navigate("Login");
+            }
+            else{
+              console.log(e);
+              Alert.alert("Something went wrong , please try again");
             }
           } else {
             console.log(e);
@@ -78,7 +86,6 @@ const ConfirmSpots = ({ route, navigation }) => {
     }
     getTokenFromAsyncStorage();
   }, [route.params]);
-
 
   return (
     <View style={styles.container}>
