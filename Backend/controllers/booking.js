@@ -13,7 +13,7 @@ const getBookings = async (req, res) => {
         const parkingSpace = await ParkingSpace.findById(booking.parkingSpace);
 
         if (!parkingSpace) {
-          console.error(`Parking space not found for booking ID: ${booking._id}`);
+          
           return {
             parkingSpaceName: 'Unknown',
             fromTime: booking.fromTime,
@@ -26,7 +26,7 @@ const getBookings = async (req, res) => {
           parkingSpaceName: parkingSpace.name,
           fromTime: booking.fromTime,
           toTime: booking.toTime,
-          status: parkingSpace.status
+          
         };
       })
     );
