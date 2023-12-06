@@ -20,11 +20,13 @@ const getBookings = async (req, res) => {
             toTime: booking.toTime,
           };
         }
-
+        console.log(parkingSpace)
         return {
+          parkingSpaceId: parkingSpace._id,
           parkingSpaceName: parkingSpace.name,
           fromTime: booking.fromTime,
           toTime: booking.toTime,
+          status: parkingSpace.status
         };
       })
     );
@@ -61,6 +63,7 @@ const getCurrentBookings = async (req, res) => {
         }
 
         return {
+          parkingSpaceId: parkingSpace._id,
           parkingSpaceName: parkingSpace.name,
           fromTime: booking.fromTime,
           toTime: booking.toTime,

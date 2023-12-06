@@ -40,66 +40,66 @@ const reserveParkingSpace = async (req, res) => {
   }
 };
 
-// const reserveParkingSpace = async (req, res) => {
-//   try {
-//     console.log("API is working");
-//     const parkingSpaceId = req.params.id;
-//     const userId = req.user.id;
-//     const { fromTime, toTime } = req.body;
+const reserveParkingSpaceFuture = async (req, res) => {
+  try {
+    console.log("API is working");
+    const parkingSpaceId = req.params.id;
+    const userId = req.user.id;
+    const { fromTime, toTime } = req.body;
 
-//     const parkingSpace = await ParkingSpace.findById(parkingSpaceId);
-//     if (!parkingSpace) {
-//       return res.status(404).json({ error: 'Parking space not found.' });
-//     }
+    const parkingSpace = await ParkingSpace.findById(parkingSpaceId);
+    if (!parkingSpace) {
+      return res.status(404).json({ error: 'Parking space not found.' });
+    }
 
-//     if (parkingSpace.reserved) {
-//       return res.status(400).json({ error: 'Parking space is already reserved.' });
-//     }
+    if (parkingSpace.reserved) {
+      return res.status(400).json({ error: 'Parking space is already reserved.' });
+    }
 
-//     const futureReservationTime = new Date(fromTime);
-//     const currentDateTime = new Date();
+    const futureReservationTime = new Date(fromTime);
+    const currentDateTime = new Date();
 
-//     if (futureReservationTime <= currentDateTime) {
-//       return res.status(400).json({ error: 'Invalid future reservation time.' });
-//     }
+    if (futureReservationTime <= currentDateTime) {
+      return res.status(400).json({ error: 'Invalid future reservation time.' });
+    }
 
-//     const delay = futureReservationTime - currentDateTime;
+    const delay = futureReservationTime - currentDateTime;
 
-//     const reservationJob = schedule.scheduleJob(futureReservationTime, async () => {
-//       parkingSpace.status = 'Occupied';
-//       parkingSpace.reserved = true;
-//       parkingSpace.reservedBy = userId;
-//       parkingSpace.reservationDuration = new Date(toTime) - futureReservationTime;
-//       await parkingSpace.save();
-//       console.log("Parking space saved");
+    const reservationJob = schedule.scheduleJob(futureReservationTime, async () => {
+      parkingSpace.status = 'Occupied';
+      parkingSpace.reserved = true;
+      parkingSpace.reservedBy = userId;
+      parkingSpace.reservationDuration = new Date(toTime) - futureReservationTime;
+      await parkingSpace.save();
+      console.log("Parking space saved");
 
-//       const newBooking = new Booking({
-//         user: userId,
-//         parkingSpace: parkingSpaceId,
-//         date: futureReservationTime,
-//         fromTime: futureReservationTime,
-//         toTime: new Date(toTime),
-//       });
-//       await newBooking.save();
-//       console.log("Booking saved");
+      const newBooking = new Booking({
+        user: userId,
+        parkingSpace: parkingSpaceId,
+        date: futureReservationTime,
+        fromTime: futureReservationTime,
+        toTime: new Date(toTime),
+      });
+      await newBooking.save();
+      console.log("Booking saved");
 
-//       const releaseJob = schedule.scheduleJob(new Date(futureReservationTime.getTime() + parkingSpace.reservationDuration), () => {
-//         parkingSpace.status = 'Available';
-//         parkingSpace.reserved = false;
-//         parkingSpace.reservedBy = null;
-//         parkingSpace.reservationDuration = null;
-//         parkingSpace.save().then(() => {
-//           console.log("Parking space released");
-//         });
-//       });
-//     });
+      const releaseJob = schedule.scheduleJob(new Date(futureReservationTime.getTime() + parkingSpace.reservationDuration), () => {
+        parkingSpace.status = 'Available';
+        parkingSpace.reserved = false;
+        parkingSpace.reservedBy = null;
+        parkingSpace.reservationDuration = null;
+        parkingSpace.save().then(() => {
+          console.log("Parking space released");
+        });
+      });
+    });
 
-//     res.json({ message: 'Reservation scheduled successfully', parkingSpace });
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).json({ error: 'Internal Server Error' });
-//   }
-// };
+    res.json({ message: 'Reservation scheduled successfully', parkingSpace });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+};
 
 
 
