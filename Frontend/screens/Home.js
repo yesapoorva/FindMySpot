@@ -9,6 +9,7 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   ScrollView,
+  Alert,
 } from "react-native";
 import { useEffect } from "react";
 import Ionicons from "@expo/vector-icons/Ionicons";
@@ -29,6 +30,7 @@ export default function Home({ navigation, route }) {
   const [bookingData, setBookingData] = useState(null);
   const [currentBookingData, setCurrentBookingData] = useState(null);
   const [asyncToken, getAsyncToken] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   async function getTokenFromAsyncStorage() {
     const token = await getUserToken();
@@ -76,6 +78,7 @@ export default function Home({ navigation, route }) {
         })
         .then((res) => {
           setBookingData(res.data);
+          console.log("previous parking data===", res.data);
         })
         .catch((e) => {
           console.log(e);
@@ -93,8 +96,10 @@ export default function Home({ navigation, route }) {
           },
         })
         .then((res) => {
+          setCurrentBookingData(null);
           setCurrentBookingData(res.data);
           console.log("data from current booking APi==", res.data);
+          // console.log("id==",res.data);
         })
         .catch((e) => {
           if (e.responce) {
@@ -105,34 +110,39 @@ export default function Home({ navigation, route }) {
     }
   }
 
-
-
   //unbooking
   async function unBookParkingSpace(parkingSpace) {
-
+    setLoading(true);
 
     if (token !== null && token !== undefined) {
       const URL = `https://findmyspot.onrender.com/api/parkingspaces/unreserve/${parkingSpace}`;
       await axios
-        .post(URL, {},{
-          headers: {
-            Authorization: token,
-          },
-        })
+        .post(
+          URL,
+          {},
+          {
+            headers: {
+              Authorization: token,
+            },
+          }
+        )
         .then((res) => {
           console.log("unbooked APi data==", res.data);
+          Alert.alert(`${res.data.message}`);
+          getCurrentBookingData();
+          getBookingData();
+
+          setLoading(false);
         })
         .catch((e) => {
           if (e.responce) {
             console.log(e.responce.data);
           }
           console.log("unbooked  APi call error===", e);
+          setLoading(false);
         });
     }
   }
-
-
-
 
   async function handleToken() {
     if (route.params !== null && route.params !== undefined) {
@@ -176,8 +186,6 @@ export default function Home({ navigation, route }) {
     };
     handleAsync();
   }, [route.params, token]);
-
-  console.log("current booknig dat-===", currentBookingData);
 
   return (
     <KeyboardAvoidingView
@@ -224,84 +232,102 @@ export default function Home({ navigation, route }) {
         <Text style={styles.SectionHead}>Upcoming Bookings</Text>
 
         <View style={styles.previousBookingContainer}>
-          {currentBookingData !== null && currentBookingData !== undefined ? (
+          {loading === true ? (
+            <ActivityIndicator />
+          ) : (
             <View>
-              {currentBookingData.length > 0 ? (
+              {currentBookingData !== null &&
+              currentBookingData !== undefined ? (
                 <View>
-                  <ScrollView style={styles.scrollStyle}>
-                    {bookingData.map((element, index) => (
-                      <View key={index} style={styles.Card}>
-                        <Text style={styles.Content}>
-                          Date: {convertTime(element.fromTime).localDate}
-                        </Text>
-                        <Text style={styles.Content}>YourSpot:</Text>
-                        <Text style={styles.Content}>
-                          {element.parkingSpaceName}
-                        </Text>
+                  {currentBookingData.length > 0 ? (
+                    <View>
+                      <ScrollView style={styles.scrollStyle}>
+                        {currentBookingData.map((element, index) => (
+                          <View key={index} style={styles.Card}>
+                            <Text style={styles.Content}>
+                              Date: {convertTime(element.fromTime).localDate}
+                            </Text>
+                            <Text style={styles.Content}>YourSpot:</Text>
+                            <Text style={styles.Content}>
+                              {element.parkingSpaceName}
+                            </Text>
 
-                        <Text style={styles.Content}>
-                          From : {convertTime(element.fromTime).localTime}
-                        </Text>
+                            <Text style={styles.Content}>
+                              From : {convertTime(element.fromTime).localTime}
+                            </Text>
 
-                        {bookingData && bookingData.length > 0 && (
-                          <TouchableOpacity
-                            onPress={() => console.log("unbooked....")}
-                          >
-                            <Text style={{ color: "red" }}>Unbook</Text>
-                          </TouchableOpacity>
-                        )}
-                      </View>
-                    ))}
-                  </ScrollView>
+                            {bookingData && bookingData.length > 0 && (
+                              <TouchableOpacity
+                                style={styles.logoutContainer}
+                                onPress={() =>
+                                  unBookParkingSpace(element.parkingSpaceId)
+                                }
+                              >
+                                <Text style={styles.logoutText}>Unbook</Text>
+                              </TouchableOpacity>
+                            )}
+                          </View>
+                        ))}
+                      </ScrollView>
+                    </View>
+                  ) : (
+                    <View>
+                      <Text>no current booking found</Text>
+                    </View>
+                  )}
                 </View>
               ) : (
-                <View>
-                  <Text>no current booking found</Text>
-                </View>
+                <ActivityIndicator size="large" color="#0F81C7" />
               )}
             </View>
-          ) : (
-            <ActivityIndicator size="large" color="#0F81C7" />
           )}
         </View>
 
         <Text style={styles.SectionHead}>Previous Bookings</Text>
 
         <View style={styles.previousBookingContainer}>
-          {bookingData !== null && bookingData !== undefined ? (
+          {loading === true ? (
+            <ActivityIndicator />
+          ) : (
             <View>
-              {bookingData.length > 0 ? (
+              {bookingData !== null && bookingData !== undefined ? (
                 <View>
-                  <ScrollView style={styles.scrollStyle}>
-                    {bookingData.map((element, index) => (
-                      <View key={index} style={styles.Card}>
-                        <Text style={styles.Content}>
-                          Date: {convertTime(element.fromTime).localDate}
-                        </Text>
-                        <Text style={styles.Content}>YourSpot:</Text>
-                        <Text style={styles.Content}>
-                          {element.parkingSpaceName}
-                        </Text>
+                  {bookingData.length > 0 ? (
+                    <View>
+                      <ScrollView style={styles.scrollStyle}>
+                        {bookingData
+                          .filter((element) => element.toTime !== null)
+                          .map((element, index) => (
+                            <View key={index} style={styles.Card}>
+                              <Text style={styles.Content}>
+                                Date: {convertTime(element.fromTime).localDate}
+                              </Text>
+                              <Text style={styles.Content}>YourSpot:</Text>
+                              <Text style={styles.Content}>
+                                {element.parkingSpaceName}
+                              </Text>
 
-                        <Text style={styles.Content}>
-                          From : {convertTime(element.fromTime).localTime}
-                        </Text>
-                        <Text style={styles.Content}>
-                          To : {convertTime(element.toTime).localTime}
-                        </Text>
-                        <Text style={styles.Content}>Tariff : 40/-</Text>
-                      </View>
-                    ))}
-                  </ScrollView>
+                              <Text style={styles.Content}>
+                                From : {convertTime(element.fromTime).localTime}
+                              </Text>
+                              <Text style={styles.Content}>
+                                To : {convertTime(element.toTime).localTime}
+                              </Text>
+                              <Text style={styles.Content}>Tariff : 40/-</Text>
+                            </View>
+                          ))}
+                      </ScrollView>
+                    </View>
+                  ) : (
+                    <View>
+                      <Text>no previous booking found</Text>
+                    </View>
+                  )}
                 </View>
               ) : (
-                <View>
-                  <Text>no previous booking found</Text>
-                </View>
+                <ActivityIndicator size="large" color="#0F81C7" />
               )}
             </View>
-          ) : (
-            <ActivityIndicator size="large" color="#0F81C7" />
           )}
         </View>
       </View>
@@ -433,5 +459,20 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     width: "100%",
     alignSelf: "center",
+  },
+  logoutContainer: {
+    height: 48,
+    width: "80%",
+    alignSelf: "center",
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 10,
+    backgroundColor: "#0F81C7",
+  },
+  logoutText: {
+    fontSize: 20,
+    color: "#F1F2F6",
   },
 });
