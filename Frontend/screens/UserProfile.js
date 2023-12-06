@@ -1,9 +1,28 @@
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  ActivityIndicator,
+} from "react-native";
 
 import { getUserToken, deleteUserToken } from "../Components/secureStore";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import axios from "axios";
 
 export default function UserProfile({ navigation }) {
+  const [authToken, setAuthToken] = useState(null);
+  const [userData, setUserData] = useState(null);
+
+  async function getTokenFromAsyncStorage() {
+    try {
+      const token = await getUserToken();
+      setAuthToken(token);
+    } catch (error) {
+      console.error("Error getting user token:", error);
+    }
+  }
+
   async function handleLogout() {
     try {
       deleteUserToken();
@@ -13,9 +32,73 @@ export default function UserProfile({ navigation }) {
     }
   }
 
+  async function getUserDetails() {
+    if (authToken !== null && authToken !== undefined) {
+      const URL = `https://findmyspot.onrender.com/api/user/getUserDetails`;
+      await axios
+        .get(URL, {
+          headers: {
+            Authorization: authToken,
+          },
+        })
+        .then((res) => {
+          console.log(res.data);
+          setUserData(res.data);
+        })
+        .catch((e) => {
+          console.log("APi call error===", e);
+        });
+    }
+  }
+
+  useEffect(() => {
+    getTokenFromAsyncStorage();
+  }, []);
+
+  useEffect(() => {
+    getUserDetails();
+  }, [authToken]);
+
   return (
     <View style={styles.container}>
-      <Text style={{ alignSelf: "center" }}> setting screen </Text>
+      <Text style={styles.SectionHead}>User Information</Text>
+
+      {userData !== null && userData !== undefined ? (
+        <View style={styles.Card}>
+          <Text style={styles.Content}>
+            Name:{" "}
+            {userData.username !== null
+              ? userData.username
+              : "No data added by user"}
+          </Text>
+          <Text style={styles.Content}>
+            Email:{" "}
+            {userData.email !== null ? userData.email : "No data added by user"}
+          </Text>
+          <Text style={styles.Content}>
+            Car Type:{" "}
+            {userData.carType !== null
+              ? userData.carType
+              : "No data added by user"}
+          </Text>
+          <Text style={styles.Content}>
+            Car Number:{" "}
+            {userData.carName !== null
+              ? userData.carName
+              : "No data added by user"}
+          </Text>
+          <Text style={styles.Content}>
+            Vehicle Number:{" "}
+            {userData.vehicleNumber !== null
+              ? userData.vehicleNumber
+              : "No data added by user"}
+          </Text>
+        </View>
+      ) : (
+        <View style={styles.Card}>
+          <ActivityIndicator />
+        </View>
+      )}
 
       <TouchableOpacity style={styles.logoutContainer} onPress={handleLogout}>
         <Text style={styles.logoutText}>Logout</Text>
@@ -32,6 +115,31 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderStyle: "solid",
     borderColor: "red",
+  },
+
+  Card: {
+    display: "flex",
+    flexDirection: "column",
+    padding: 15,
+    margin: 10,
+    backgroundColor: "#F1F2F6",
+    borderRadius: 10,
+    width: "95%",
+    //height: 200,
+    borderColor: "#0F81C7",
+    borderWidth: 3,
+  },
+  SectionHead: {
+    fontSize: 24,
+    fontWeight: "bold",
+    textDecorationLine: "underline",
+    marginBottom: 5,
+    marginTop: 10,
+  },
+  Content: {
+    fontSize: 18,
+    marginBottom: 5,
+    flexShrink: 1,
   },
 
   logoutContainer: {

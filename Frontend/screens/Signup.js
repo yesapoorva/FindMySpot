@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, ActivityIndicator } from "react-native";
+import { View, ActivityIndicator , Alert} from "react-native";
 import axios from "axios";
 import { Formik } from "formik";
 import { Octicons, Ionicons, Fontisto } from "@expo/vector-icons";
@@ -46,23 +46,22 @@ const Signup = () => {
   };
 
 
-const handleSignup = async (credentials, setSubmitting, handleMessage, navigation, ) => {
+const handleSignup = async (credentials, setSubmitting, ) => {
   handleMessage(null);
 
   try {
     const url = 'https://findmyspot.onrender.com/api/user/signup';
     const response = await axios.post(url, credentials);
+    console.log("responce data ====",response.data);
 
     const result = response.data;
     const { message, data } = result;
 
     if (message === 'User created successfully') {
-      // Token is being stored!
-      await storeUserToken(result.token);
 
-      console.log('Navigating to Home page with data:', result);
-      navigation.navigate('TabNavigation', { userData: result });
-      setUserToken(result.token);
+     
+      Alert.alert(`${message}`);
+      navigation.navigate('Login');
       setSubmitting(false);
     } else {
       console.log('Signup failed. Response Message:', message);
