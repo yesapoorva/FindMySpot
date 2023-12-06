@@ -26,6 +26,7 @@ const getBookings = async (req, res) => {
           parkingSpaceName: parkingSpace.name,
           fromTime: booking.fromTime,
           toTime: booking.toTime,
+          status: parkingSpace.status
         };
       })
     );

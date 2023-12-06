@@ -23,8 +23,6 @@ app.use("/api/parkingspaces", reservationRoutes);
 app.use("/api/stripe", stripe);
 app.use("/api", bookingRoutes);
 
-// --------------------------deployment------------------------------
-
 const __dirname1 = path.resolve();
 
 if (process.env.NODE_ENV === "production") {
@@ -38,8 +36,6 @@ if (process.env.NODE_ENV === "production") {
     res.send("API is running");
   });
 }
-
-// --------------------------deployment------------------------------
 
 const PORT = process.env.PORT;
 
