@@ -294,6 +294,7 @@ export default function Home({ navigation, route }) {
                     <View>
                       <ScrollView style={styles.scrollStyle}>
                         {bookingData
+                          .reverse()
                           .filter((element) => element.toTime !== null)
                           .map((element, index) => (
                             <View key={index} style={styles.Card}>
