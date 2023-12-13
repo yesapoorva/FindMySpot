@@ -6,7 +6,6 @@ import {
   StyleSheet,
   ScrollView,
   TouchableOpacity,
-  Button,
 } from "react-native";
 import MapView from "react-native-maps";
 import { Marker } from "react-native-maps";
@@ -14,7 +13,7 @@ import * as Location from "expo-location";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import axios from "axios";
 
-//import api
+//import api KEY
 import { TOMTOM_API_KEY } from "@env";
 
 export default function Destination({ route, navigation }) {
@@ -83,6 +82,9 @@ export default function Destination({ route, navigation }) {
     }
   }
 
+
+
+// function to update markers with distance and time from user's location
   async function updateMarkers(origin, markerArray, key) {
     if (
       markerArray.length > 0 &&
@@ -117,10 +119,14 @@ export default function Destination({ route, navigation }) {
     }
   }
 
+
+  // custom marker 
   function CustomMarker({ color }) {
     return <Ionicons name="car" color={color} size={30}></Ionicons>;
   }
 
+
+  // function to re animate map to fit markers
   function fitToCoordinate() {
     if (mapReference.current && markerCoordinates.length > 0) {
       const searchedLocation = {
@@ -138,6 +144,8 @@ export default function Destination({ route, navigation }) {
     }
   }
 
+
+  // function to reanimate map to display user's location
   function showUserLocation() {
     if (userCoOrdinates.latitude !== null && userCoOrdinates !== null) {
       mapReference.current.animateToRegion({
@@ -149,6 +157,8 @@ export default function Destination({ route, navigation }) {
     }
   }
 
+
+  // seconds to hour and minutes
   function convertTime(totalSeconds) {
     const totalMinutes = Math.floor(totalSeconds / 60);
     const seconds = totalSeconds % 60;
@@ -158,6 +168,7 @@ export default function Destination({ route, navigation }) {
     return `${hours} hr ${minutes} min`;
   }
 
+  //navigation function on book button
   function handleNavigation(result) {
    
     navigation.removeListener;
@@ -180,7 +191,7 @@ export default function Destination({ route, navigation }) {
       await getUserLocation();
 
       if (route.params !== undefined && markerCoordinates.length > 0) {
-        await getParkingLocations(route.params);
+       // await getParkingLocations(route.params);
         await updateMarkers(userCoOrdinates, markerCoordinates, TOMTOM_API_KEY);
       }
     })();
