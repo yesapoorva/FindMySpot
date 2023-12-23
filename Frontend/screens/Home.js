@@ -26,17 +26,18 @@ import axios from "axios";
 export default function Home({ navigation, route }) {
   const [searchInput, setSearchInput] = useState("");
   const [searchResult, setSearchResult] = useState([]);
-  const [token, setToken] = useState(null);
   const [bookingData, setBookingData] = useState(null);
   const [currentBookingData, setCurrentBookingData] = useState(null);
   const [asyncToken, getAsyncToken] = useState(null);
   const [loading, setLoading] = useState(false);
 
+  // to get token from expo secure store
   async function getTokenFromAsyncStorage() {
     const token = await getUserToken();
     getAsyncToken(token);
   }
 
+  //to get user's location permission
   async function getLocation() {
     const { status } = await Location.requestForegroundPermissionsAsync();
     if (status === "granted") {
@@ -46,6 +47,7 @@ export default function Home({ navigation, route }) {
     }
   }
 
+  // to call tomtom search API
   async function handleSearch() {
     const URL = `https://api.tomtom.com/search/2/search/${encodeURIComponent(
       searchInput
@@ -59,6 +61,7 @@ export default function Home({ navigation, route }) {
       .catch((e) => console.log(e));
   }
 
+  // pass selected data to destination screen
   function handleNavigation(data) {
     const result = { ...data, ...route.params };
     navigation.navigate("DestinationStack", {
@@ -67,18 +70,19 @@ export default function Home({ navigation, route }) {
     });
   }
 
-  async function getBookingData() {
-    if (token !== null && token !== undefined) {
+  // get prvious booking data from backend API
+  async function getPreviousBookingData() {
+    if (asyncToken !== null && asyncToken !== undefined) {
       const URL = `https://findmyspot.onrender.com/api/bookings`;
       await axios
         .get(URL, {
           headers: {
-            Authorization: token,
+            Authorization: asyncToken,
           },
         })
         .then((res) => {
           setBookingData(res.data);
-          console.log("previous parking data===", res.data);
+          // console.log("previous parking data===", res.data);
         })
         .catch((e) => {
           console.log(e);
@@ -86,20 +90,19 @@ export default function Home({ navigation, route }) {
     }
   }
 
+  //get current booking data from backend API
   async function getCurrentBookingData() {
-    if (token !== null && token !== undefined) {
+    if (asyncToken !== null && asyncToken !== undefined) {
       const URL = `https://findmyspot.onrender.com/api/currentBookings`;
       await axios
         .get(URL, {
           headers: {
-            Authorization: token,
+            Authorization: asyncToken,
           },
         })
         .then((res) => {
           setCurrentBookingData(null);
           setCurrentBookingData(res.data);
-          console.log("data from current booking APi==", res.data);
-          // console.log("id==",res.data);
         })
         .catch((e) => {
           if (e.responce) {
@@ -110,11 +113,11 @@ export default function Home({ navigation, route }) {
     }
   }
 
-  //unbooking
+  // function to unbook parking space usngi backend API
   async function unBookParkingSpace(parkingSpace) {
     setLoading(true);
 
-    if (token !== null && token !== undefined) {
+    if (asyncToken !== null && asyncToken !== undefined) {
       const URL = `https://findmyspot.onrender.com/api/parkingspaces/unreserve/${parkingSpace}`;
       await axios
         .post(
@@ -122,7 +125,7 @@ export default function Home({ navigation, route }) {
           {},
           {
             headers: {
-              Authorization: token,
+              Authorization: asyncToken,
             },
           }
         )
@@ -130,7 +133,7 @@ export default function Home({ navigation, route }) {
           console.log("unbooked APi data==", res.data);
           Alert.alert(`${res.data.message}`);
           getCurrentBookingData();
-          getBookingData();
+          getPreviousBookingData();
 
           setLoading(false);
         })
@@ -144,12 +147,7 @@ export default function Home({ navigation, route }) {
     }
   }
 
-  async function handleToken() {
-    if (route.params !== null && route.params !== undefined) {
-      setToken(route.params.userData.token);
-    }
-  }
-
+  //to convert UCT time to local 12 hour format time
   function convertTime(timeString) {
     try {
       const dateObj = moment.utc(timeString).tz("Asia/Kolkata");
@@ -166,26 +164,26 @@ export default function Home({ navigation, route }) {
     }
   }
 
+  // first uesEffect to get user location permission and to get token from secure store
   useEffect(() => {
     getLocation();
+    getTokenFromAsyncStorage();
   }, []);
 
-  useEffect(() => {
-    //console.log("moved to home screen , clearing searchresult array");
-    setSearchResult([]);
-  }, [route.params]);
-
+  // second useEffect to call current data and previous data functions
   useEffect(() => {
     const handleAsync = async () => {
-      await handleToken();
-      getTokenFromAsyncStorage();
-      if (token !== null && token !== undefined) {
-        await getBookingData();
+      await getTokenFromAsyncStorage();
+      if (asyncToken !== null && asyncToken !== undefined) {
+        await getPreviousBookingData();
         await getCurrentBookingData();
       }
     };
     handleAsync();
-  }, [route.params, token]);
+
+    //cleanup function
+    return setSearchResult([]);
+  }, [route.params, asyncToken]);
 
   return (
     <KeyboardAvoidingView
@@ -231,7 +229,7 @@ export default function Home({ navigation, route }) {
 
         <Text style={styles.SectionHead}>Upcoming Bookings</Text>
 
-        <View style={styles.previousBookingContainer}>
+        <View style={styles.BookingContainer}>
           {loading === true ? (
             <ActivityIndicator />
           ) : (
@@ -285,7 +283,7 @@ export default function Home({ navigation, route }) {
 
         <Text style={styles.SectionHead}>Previous Bookings</Text>
 
-        <View style={styles.previousBookingContainer}>
+        <View style={styles.BookingContainer}>
           {loading === true ? (
             <ActivityIndicator />
           ) : (
@@ -296,6 +294,7 @@ export default function Home({ navigation, route }) {
                     <View>
                       <ScrollView style={styles.scrollStyle}>
                         {bookingData
+                          .reverse()
                           .filter((element) => element.toTime !== null)
                           .map((element, index) => (
                             <View key={index} style={styles.Card}>
@@ -440,23 +439,18 @@ const styles = StyleSheet.create({
   ContentDate: {
     flexDirection: "row",
   },
-  previousBookingContainer: {
+  BookingContainer: {
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
 
-    borderColor: "blue",
-    borderWidth: 1,
     width: "100%",
-
     minHeight: 250,
   },
   scrollStyle: {
-    minHeight: 250,
-    maxHeight: 250,
+    minHeight: 210,
+    maxHeight: 210,
     minWidth: "100%",
-    borderColor: "black",
-    borderWidth: 1,
     width: "100%",
     alignSelf: "center",
   },
