@@ -14,41 +14,38 @@ Welcome to FindMySpot, your go-to solution for navigating the urban parking chao
 
 1. **Search:** Enter your destination, and FindMySpot will display a map with real-time parking availability.
 
-2. **Book and Unbook Parking Spaces:** Seamlessly reserve parking spots based on your preferences, ensuring a hassle-free experience. Easily manage your bookings by reserving a spot when needed and releasing it when plans change, providing flexibility and convenience for your parking needs..
+2. **Book and Unbook Parking Spaces:** Seamlessly reserve parking spots based on your preferences, ensuring a hassle-free experience. Easily manage your bookings by reserving a spot when needed and releasing it when plans change, providing flexibility and convenience for your parking needs.
 
 ## Screenshots
 
-![Signup](./Screen_preview/signup.png)
-**Signup**
+<div align="center">
+  <img src="./Screen_preview/signup.png" alt="Signup" width="400"/>
+  <img src="./Screen_preview/login.png" alt="Login" width="400"/>
+</div>
 
-![Login](./Screen_preview/login.png)
-**Login**
+<div align="center">
+  <img src="./Screen_preview/home.png" alt="Home" width="400"/>
+  <img src="./Screen_preview/destination.png" alt="Destination" width="400"/>
+</div>
 
-![Home](./Screen_preview/home.png)
-**Home**
+<div align="center">
+  <img src="./Screen_preview/Profile.png" alt="Profile" width="400"/>
+  <img src="./Screen_preview/confirmationBooking.png" alt="Booking Confirmation" width="400"/>
+</div>
 
-![Destination](./Screen_preview/destination.png)
-**Destination**
+<div align="center">
+  <img src="./Screen_preview/reseration_sucessful_alert.png" alt="Successful Booking" width="400"/>
+  <img src="./Screen_preview/updated_home.png" alt="Updated Home" width="400"/>
+</div>
 
-![Profile](./Screen_preview/Profile.png)
-**Profile**
-
-![Booking Confirmation](./Screen_preview/confirmationBooking.png)
-**Booking Confirmation**
-
-![Successful Booking](./Screen_preview/reseration_sucessful_alert.png)
-**Successful Booking**
-
-![Updated Home](./Screen_preview/updated_home.png)
-**Updated Home**
-
-![Successful Unbooking](./Screen_preview/unreserve_sucessful_alert.png)
-**Successful Unbooking**
+<div align="center">
+  <img src="./Screen_preview/unreserve_sucessful_alert.png" alt="Successful Unbooking" width="400"/>
+</div>
 
 
 ## Demo Video
 
-[Watch our demo video](./Screen_preview/FindMySpot_Demo.MP4) to see FindMySpot in action. This screen recording provides a glimpse into the app's features and how it simplifies your parking search.
+This screen recording provides a glimpse into the app's features and how it simplifies your parking search.
 
 https://github.com/yesapoorva/FindMySpot/assets/142199181/13e22279-54f0-4cda-adbf-65aee0840323
 
