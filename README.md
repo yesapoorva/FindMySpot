@@ -22,13 +22,13 @@ Welcome to FindMySpot, your go-to solution for navigating the urban parking chao
   <img src="./Screen_preview/signup.png" alt="Signup" width="200" />&nbsp;&nbsp;&nbsp;
   <img src="./Screen_preview/login.png" alt="Login" width="200" />&nbsp;&nbsp;&nbsp;
   <img src="./Screen_preview/home.png" alt="Home" width="200" />
-</div>
+</div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 
 <div align="center">
   <img src="./Screen_preview/destination.png" alt="Destination" width="200" />&nbsp;&nbsp;&nbsp;
   <img src="./Screen_preview/Profile.png" alt="Profile" width="200" />&nbsp;&nbsp;&nbsp;
   <img src="./Screen_preview/confirmationBooking.png" alt="Booking Confirmation" width="200" />
-</div>
+</div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 
 <div align="center">
   <img src="./Screen_preview/reseration_sucessful_alert.png" alt="Successful Booking" width="200" />&nbsp;&nbsp;&nbsp;
