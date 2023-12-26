@@ -50,3 +50,7 @@ Welcome to FindMySpot, your go-to solution for navigating the urban parking chao
 
 [Watch our demo video](./Screen_preview/FindMySpot_Demo.MP4) to see FindMySpot in action. This screen recording provides a glimpse into the app's features and how it simplifies your parking search.
 
+https://github.com/yesapoorva/FindMySpot/assets/142199181/13e22279-54f0-4cda-adbf-65aee0840323
+
+
+
